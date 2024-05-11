@@ -1,0 +1,6 @@
+# docs
+tags
+
+# Rust
+/target
+*.so
