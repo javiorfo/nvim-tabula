@@ -1,2 +1,4 @@
-# nvim-dbking
-*A plugin for using multi databases written in Lua and Rust*
+ nvim-coagula
+*A plugin for coagulating databases*
+
+Multi database client for Neovim
