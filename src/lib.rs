@@ -3,7 +3,7 @@ use std::convert::Infallible;
 use nvim_oxi::{Dictionary, Function, Object};
 
 #[nvim_oxi::module]
-fn dbeer_rs() -> nvim_oxi::Result<Dictionary> {
+fn dbeard_rs() -> nvim_oxi::Result<Dictionary> {
     let execute = Function::from_fn(|_: ()| {
         Ok::<_, Infallible>(())
     });
