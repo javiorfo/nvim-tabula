@@ -2,7 +2,7 @@ local M = {}
 
 local function logger(msg)
     return function(level)
-        msg = string.format("  Coagula   %s", msg)
+        msg = string.format("  DBinder   %s", msg)
         vim.notify(msg, level)
     end
 end

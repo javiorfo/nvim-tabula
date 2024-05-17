@@ -8,6 +8,6 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-cp $ROOT/target/release/libcoagula_rs.so $ROOT
-mv $ROOT/libcoagula_rs.so $ROOT/coagula_rs.so
-mv $ROOT/coagula_rs.so $ROOT/lua/
+cp $ROOT/target/release/libdbinder_rs.so $ROOT
+mv $ROOT/libdbinder_rs.so $ROOT/dbinder_rs.so
+mv $ROOT/dbinder_rs.so $ROOT/lua/
