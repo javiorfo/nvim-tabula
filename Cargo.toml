@@ -1,5 +1,5 @@
 [package]
-name = "dbinder_rs"
+name = "dbeer_rs"
 version = "0.1.0"
 edition = "2021"
 authors = ["Javier Orfo"]

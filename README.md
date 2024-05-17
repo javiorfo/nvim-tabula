@@ -1,4 +1,4 @@
-## nvim-dbinder
-*A plugin for binding databases*
+## nvim-dbeer
+*Queries & beer*
 
 Multi database client for Neovim

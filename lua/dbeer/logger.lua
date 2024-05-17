@@ -2,7 +2,7 @@ local M = {}
 
 local function logger(msg)
     return function(level)
-        msg = string.format("  DBinder   %s", msg)
+        msg = string.format("  DBeer   %s", msg)
         vim.notify(msg, level)
     end
 end
@@ -27,8 +27,8 @@ function M:info(msg)
 end
 
 function M:debug(msg)
-    local util = require 'coagula.util'
-    if require'coagula'.SETTINGS.internal.log_debug then
+    local util = require 'dbeer.util'
+    if require'dbeer'.SETTINGS.internal.log_debug then
         local file = io.open(util.coagula_log_file, "a")
         if file then
             file:write(string.format("%s %s\n", util.debug_header, msg))
