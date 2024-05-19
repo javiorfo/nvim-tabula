@@ -1,4 +1,4 @@
-## nvim-dbeard
-*A DB for the man with the beard*
+## nvim-tabula
+*Multi database client for Neovim*
 
-Multi database client for Neovim
+
