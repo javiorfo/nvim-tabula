@@ -7,14 +7,14 @@ import (
 	"log"
 )
 
-type Pair struct {
+type Column struct {
 	Name   string
 	Length int
 }
 
 type QueryResult struct {
-	header map[int]Pair
-	rows   map[int][]Pair
+	header map[int]Column
+	rows   map[int][]string
 }
 
 func main() {
@@ -37,12 +37,12 @@ func main() {
 	}
 
 	queryResult := QueryResult{
-		make(map[int]Pair),
-		make(map[int][]Pair),
+		make(map[int]Column),
+		make(map[int][]string),
 	}
 
 	for i, value := range columns {
-		queryResult.header[i+1] = Pair{value, len(value)}
+		queryResult.header[i+1] = Column{value, len(value)}
 	}
 
 	values := make([]any, len(columns))
@@ -66,11 +66,11 @@ func main() {
 				value = "null"
 			}
 
-			queryResult.rows[rowNr] = append(queryResult.rows[rowNr], Pair{value, valueLength})
+			queryResult.rows[rowNr] = append(queryResult.rows[rowNr], value)
 			index := len(queryResult.rows[rowNr])
 
 			if queryResult.header[index].Length < valueLength {
-				queryResult.header[index] = Pair{queryResult.header[index].Name, valueLength}
+				queryResult.header[index] = Column{queryResult.header[index].Name, valueLength}
 			}
 		}
 		rowNr++
