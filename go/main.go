@@ -25,7 +25,7 @@ func main() {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT id, info FROM dummies")
+	rows, err := db.Query("SELECT * FROM dummies")
 	if err != nil {
 		panic(err)
 	}
@@ -40,13 +40,14 @@ func main() {
 		make(map[int]Pair),
 		make(map[int][]Pair),
 	}
+
 	for i, value := range columns {
 		queryResult.header[i+1] = Pair{value, len(value)}
 	}
 
 	values := make([]any, len(columns))
 	for i := range values {
-		var value interface{}
+		var value any
 		values[i] = &value
 	}
 
@@ -58,11 +59,18 @@ func main() {
 		}
 
 		for _, value := range values {
-			val := *value.(*interface{})
-			valor := fmt.Sprintf("%v", val)
-			queryResult.rows[rowNr] = append(queryResult.rows[rowNr], Pair{valor, len(valor)})
-			if queryResult.header[rowNr].Length < len(valor) {
-				queryResult.header[rowNr] = Pair{queryResult.header[rowNr].Name, len(valor)}
+			value := fmt.Sprintf("%v", *value.(*any))
+			valueLength := len(value)
+
+			if value == "<nil>" {
+				value = "null"
+			}
+
+			queryResult.rows[rowNr] = append(queryResult.rows[rowNr], Pair{value, valueLength})
+			index := len(queryResult.rows[rowNr])
+
+			if queryResult.header[index].Length < valueLength {
+				queryResult.header[index] = Pair{queryResult.header[index].Name, valueLength}
 			}
 		}
 		rowNr++
