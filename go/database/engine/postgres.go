@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
+
 	"github.com/javiorfo/nvim-tabula/go/database/query"
 	_ "github.com/lib/pq"
 )
@@ -12,11 +14,16 @@ type Postgres struct{}
 
 const POSTGRES = "postgres"
 
-func (Postgres) Execute(queries string, connStr string) {
-	db, err := sql.Open(POSTGRES, connStr)
+func getDB(connStr string) *sql.DB {
+    db, err := sql.Open(POSTGRES, connStr)
 	if err != nil {
 		panic(err)
 	}
+    return db
+}
+
+func (*Postgres) Execute(queries string, connStr string) {
+	db := getDB(connStr) 
 	defer db.Close()
 
 	rows, err := db.Query(queries)
@@ -42,7 +49,8 @@ func (Postgres) Execute(queries string, connStr string) {
 		}
 	}
 
-	values := make([]any, len(columns))
+    lenColumns := len(columns)
+	values := make([]any, lenColumns)
 	for i := range values {
 		var value any
 		values[i] = &value
@@ -54,17 +62,18 @@ func (Postgres) Execute(queries string, connStr string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		for _, value := range values {
-			value := fmt.Sprintf("%v", *value.(*any))
+        
+        selectResult.Rows[rowNr] = make([]string, lenColumns)
+		for i, value := range values {
+			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1)
 			valueLength := len(value)
 
 			if value == "<nil>" {
 				value = "null"
 			}
 
-			selectResult.Rows[rowNr] = append(selectResult.Rows[rowNr], value)
-			index := len(selectResult.Rows[rowNr])
+			selectResult.Rows[rowNr][i] = value
+			index := i + 1
 
 			if selectResult.Header[index].Length < valueLength {
 				selectResult.Header[index] = query.ColumnResult{
