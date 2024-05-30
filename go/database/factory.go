@@ -12,10 +12,11 @@ type Executor interface {
 }
 
 func Context(engine_str string) (Executor, error) {
-	engine_str = strings.ToLower(engine_str)
-	switch engine_str {
+	switch engine_str = strings.ToLower(engine_str); engine_str {
 	case engine.POSTGRES:
-		return &engine.Postgres{}, nil
+		return engine.Postgres{}, nil
+	case engine.MYSQL:
+		return engine.MySql{}, nil
 	default:
 		return nil, errors.New("engine does not exist")
 	}

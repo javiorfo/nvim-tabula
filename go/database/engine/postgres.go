@@ -14,31 +14,32 @@ type Postgres struct{}
 
 const POSTGRES = "postgres"
 
-func getDB(connStr string) *sql.DB {
-    db, err := sql.Open(POSTGRES, connStr)
+func getDB(connStr string) (*sql.DB, func()) {
+	db, err := sql.Open(POSTGRES, connStr)
 	if err != nil {
 		panic(err)
 	}
-    return db
+	return db, func() { db.Close() }
 }
 
-func (*Postgres) Execute(queries string, connStr string) {
-	db := getDB(connStr) 
-	defer db.Close()
+func (Postgres) Execute(queries string, connStr string) {
+	db, closer := getDB(connStr)
+	defer closer()
 
 	rows, err := db.Query(queries)
 	if err != nil {
 		panic(err)
 	}
 	defer rows.Close()
-    
-    columns, err := rows.Columns()
+
+	columns, err := rows.Columns()
 	if err != nil {
 		log.Fatal(err)
 	}
+	lenColumns := len(columns)
 
-	selectResult := query.SelectResult {
-		Header: make(map[int]query.ColumnResult),
+	selectResult := query.SelectResult{
+		Header: make(map[int]query.ColumnResult, lenColumns),
 		Rows:   make(map[int][]string),
 	}
 
@@ -49,7 +50,6 @@ func (*Postgres) Execute(queries string, connStr string) {
 		}
 	}
 
-    lenColumns := len(columns)
 	values := make([]any, lenColumns)
 	for i := range values {
 		var value any
@@ -62,8 +62,8 @@ func (*Postgres) Execute(queries string, connStr string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-        
-        selectResult.Rows[rowNr] = make([]string, lenColumns)
+
+		selectResult.Rows[rowNr] = make([]string, lenColumns)
 		for i, value := range values {
 			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1)
 			valueLength := len(value)
