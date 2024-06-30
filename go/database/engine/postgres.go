@@ -6,7 +6,7 @@ import (
 	"log"
 	"strings"
 
-	"github.com/javiorfo/nvim-tabula/go/database/query"
+	"github.com/chaosystema/nvim-tabula/go/database/query"
 	_ "github.com/lib/pq"
 )
 
