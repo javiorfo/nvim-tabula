@@ -3,7 +3,7 @@ package database
 import (
 	"errors"
 
-	"github.com/javiorfo/nvim-tabula/go/database/engine"
+	"github.com/chaosystema/nvim-tabula/go/database/engine"
 )
 
 type Executor interface {
