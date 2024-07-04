@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/chaosystema/nvim-tabula/go/database"
+	"github.com/javiorfo/nvim-tabula/go/database"
 )
 
 func main() {
