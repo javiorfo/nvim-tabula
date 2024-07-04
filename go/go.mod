@@ -1,4 +1,4 @@
-module github.com/chaosystema/nvim-tabula/go
+module github.com/javiorfo/nvim-tabula/go
 
 go 1.22.3
 
