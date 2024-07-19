@@ -14,6 +14,8 @@ func Context(engine_str string) (Executor, error) {
 	switch engine_str {
 	case engine.POSTGRES:
 		return engine.Postgres{}, nil
+	case engine.MONGO:
+		return engine.Mongo{}, nil
 	case engine.MYSQL:
 		return engine.MySql{}, nil
 	default:
