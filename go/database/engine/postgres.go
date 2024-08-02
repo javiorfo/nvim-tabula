@@ -38,15 +38,15 @@ func (Postgres) Execute(queries string, connStr string) {
 	}
 	lenColumns := len(columns)
 
-	selectResult := query.SelectResult{
-		Header: make(map[int]query.ColumnResult, lenColumns),
+	tabula := query.Tabula{
+		Headers: make(map[int]query.Header, lenColumns),
 		Rows:   make(map[int][]string),
 	}
 
 	for i, value := range columns {
-		selectResult.Header[i+1] = query.ColumnResult{
-			Name:   value,
-			Length: len(value),
+		tabula.Headers[i+1] = query.Header{
+			Name:   " " + strings.ToUpper(value),
+			Length: len(value) + 2,
 		}
 	}
 
@@ -63,27 +63,27 @@ func (Postgres) Execute(queries string, connStr string) {
 			log.Fatal(err)
 		}
 
-		selectResult.Rows[rowNr] = make([]string, lenColumns)
+		tabula.Rows[rowNr] = make([]string, lenColumns)
 		for i, value := range values {
 			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1)
-			valueLength := len(value)
+			valueLength := len(value) + 2
 
 			if value == "<nil>" {
-				value = "null"
+				value = "NULL"
 			}
 
-			selectResult.Rows[rowNr][i] = value
+			tabula.Rows[rowNr][i] = " " + value
 			index := i + 1
 
-			if selectResult.Header[index].Length < valueLength {
-				selectResult.Header[index] = query.ColumnResult{
-					Name:   selectResult.Header[index].Name,
+			if tabula.Headers[index].Length < valueLength {
+				tabula.Headers[index] = query.Header{
+					Name:   tabula.Headers[index].Name,
 					Length: valueLength,
 				}
 			}
 		}
 		rowNr++
 	}
-	fmt.Println(selectResult.Header)
-	fmt.Println(selectResult.Rows)
+
+    tabula.Generate()
 }
