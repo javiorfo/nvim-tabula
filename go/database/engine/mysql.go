@@ -1,7 +1,10 @@
 package engine
 
-type MySql struct{}
+type MySql struct {
+	ConnStr string
+	Queries string
+}
 
 const MYSQL = "mysql"
 
-func (MySql) Execute(queries string, connStr string) {}
+func (my MySql) Execute() {}

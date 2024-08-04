@@ -7,18 +7,30 @@ import (
 )
 
 type Executor interface {
-	Execute(queries string, connStr string)
+	Execute() // TODO return error
 }
 
-func Context(engine_str string) (Executor, error) {
-	switch engine_str {
+func Context(db, connStr, queries string) error {
+	switch db {
 	case engine.POSTGRES:
-		return engine.Postgres{}, nil
+		engine.Postgres{
+			ConnStr: connStr,
+			Queries: queries,
+		}.Execute()
+		return nil
 	case engine.MONGO:
-		return engine.Mongo{}, nil
+		engine.Mongo{
+			ConnStr: connStr,
+			Queries: queries,
+		}.Execute()
+		return nil
 	case engine.MYSQL:
-		return engine.MySql{}, nil
+		engine.MySql{
+			ConnStr: connStr,
+			Queries: queries,
+		}.Execute()
+		return nil
 	default:
-		return nil, errors.New("engine does not exist")
+		return errors.New("engine does not exist")
 	}
 }

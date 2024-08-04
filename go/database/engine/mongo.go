@@ -3,18 +3,21 @@ package engine
 import (
 	"context"
 	"fmt"
-	"log"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-    "go.mongodb.org/mongo-driver/bson"
+	"log"
 )
 
-type Mongo struct{}
+type Mongo struct {
+	ConnStr string
+	Queries string
+}
 
 const MONGO = "mongo"
 
-func (Mongo) Execute(queries string, connStr string) {
-    clientOptions := options.Client().ApplyURI(connStr)
+func (m Mongo) Execute() {
+	clientOptions := options.Client().ApplyURI(m.ConnStr)
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {

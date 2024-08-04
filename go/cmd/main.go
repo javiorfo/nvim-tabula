@@ -15,10 +15,8 @@ func main() {
     connStr := "mongodb://admin:admin@localhost:27017"
 	queries := "select * from dummies;" */
 
-	engine, err := database.Context(db)
-	if err == nil {
-		engine.Execute(queries, connStr)
-	} else {
+	err := database.Context(db, connStr, queries)
+	if err != nil {
 		log.Fatal(err)
 	}
 }

@@ -10,23 +10,26 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Postgres struct{}
+type Postgres struct{
+    ConnStr string
+    Queries string
+}
 
 const POSTGRES = "postgres"
 
-func getDB(connStr string) (*sql.DB, func()) {
-	db, err := sql.Open(POSTGRES, connStr)
+func (p Postgres) getDB() (*sql.DB, func()) {
+	db, err := sql.Open(POSTGRES, p.ConnStr)
 	if err != nil {
 		panic(err)
 	}
 	return db, func() { db.Close() }
 }
 
-func (Postgres) Execute(queries string, connStr string) {
-	db, closer := getDB(connStr)
+func (p Postgres) Execute() {
+	db, closer := p.getDB()
 	defer closer()
 
-	rows, err := db.Query(queries)
+	rows, err := db.Query(p.Queries)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +68,7 @@ func (Postgres) Execute(queries string, connStr string) {
 
 		tabula.Rows[rowNr] = make([]string, lenColumns)
 		for i, value := range values {
-			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1)
+			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1) // TODO check if is date or leave out
 			valueLength := len(value) + 2
 
 			if value == "<nil>" {
