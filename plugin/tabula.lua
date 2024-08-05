@@ -17,17 +17,21 @@ vim.api.nvim_create_user_command('TabulaShowTables', function()
 end, {})
 
 vim.api.nvim_create_user_command('TabulaShowTableInfo', function(opts)
-    require 'tabula.core'.show_table_info(opts.fargs)
+--     require 'tabula.core'.show_table_info(opts.fargs)
 end, {
     nargs = 1,
     complete = function(_, _)
         -- TODO call to Go
-        local specials = require'tabula'.DEFAULTS.special
+        local ok, tables = pcall(dofile, require'tabula.util'.lua_tabula_path .. 'tables.lua')
         local names = {}
-        if specials then
-           for _, v in pairs(specials) do
-                table.insert(names, v.name)
-           end
+        if ok then
+            if tables then
+               for _, v in pairs(tables) do
+                    table.insert(names, v)
+               end
+            end
+        else
+            table.insert(names, "no tables")
         end
         return names
     end
@@ -38,9 +42,9 @@ vim.api.nvim_create_user_command('TabulaShowLogs', function()
 end, {})
 
 vim.api.nvim_create_user_command('TabulaShowDBInfo', function()
-    require("tabula.core").show_db_info()
+    require("tabula.database").show_info()
 end, {})
 
-vim.api.nvim_create_user_command('TabulaShowConnections', function()
-    require("tabula.core").show_connections()
+vim.api.nvim_create_user_command('TabulaSelectDB', function()
+    require("tabula.database").select()
 end, {})

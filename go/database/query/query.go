@@ -14,7 +14,8 @@ type Header struct {
 
 type Tabula struct {
 	Headers map[int]Header
-	Rows   map[int][]string
+// 	Rows   map[int][]string
+	Rows   [][]string
 }
 
 func (t Tabula) Generate() {
@@ -64,7 +65,7 @@ func (t Tabula) Generate() {
 		value := vert
 		var line string
 
-		if i-1 < rowsLength {
+		if i < rowsLength {
 			line += vert_left
 		} else {
 			line += corner_bottom_left
@@ -75,7 +76,7 @@ func (t Tabula) Generate() {
 			value += vert
 
 			line += strings.Repeat(hor, headers[j+1].Length)
-			if i-1 < rowsLength {
+			if i < rowsLength {
 				if j < rowFieldsLength {
 					line += intersection
 				} else {

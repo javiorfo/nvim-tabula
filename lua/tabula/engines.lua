@@ -1,29 +1,35 @@
 local host = "localhost"
+local default_posgres_port = "5432"
+local default_mongo_port = "27017"
 
 return {
     db = {
         postgres = {
+            title = "PostgreSQL",
+            default_port = default_posgres_port,
+            default_host = host,
             get_connection_string = function(connection)
-                local conn_str = string.format("host=%s port=%s dbname=%s %s %s sslmode=disable",
+                return string.format("host=%s port=%s dbname=%s %s %s sslmode=disable",
                     connection.host or host,
-                    connection.port or "5432",
+                    connection.port or default_posgres_port,
                     connection.dbname,
                     connection.user and "user=" .. connection.user or "",
                     connection.password and "password=" .. connection.password or ""
                 )
-                return conn_str
             end
         },
         mongo = {
+            title = "MongoDB",
+            default_port = default_mongo_port,
+            default_host = host,
             get_connection_string = function(connection)
-                local conn_str = string.format("mongodb://%s%s%s:%s/%s",
+                return string.format("mongodb://%s%s%s:%s/%s",
                     connection.user and connection.user or "",
                     connection.password and  ":" .. connection.password .. "@" or "",
                     connection.host or host,
-                    connection.port or "27017",
+                    connection.port or default_mongo_port,
                     connection.dbname
                 )
-                return conn_str
             end
         }
     }

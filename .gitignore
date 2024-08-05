@@ -1,5 +1,8 @@
 # docs
 tags
 
+# Lua
+/lua/tabula/tables.lua
+
 # Go
 /bin/

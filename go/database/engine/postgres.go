@@ -10,9 +10,9 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type Postgres struct{
-    ConnStr string
-    Queries string
+type Postgres struct {
+	ConnStr string
+	Queries string
 }
 
 const POSTGRES = "postgres"
@@ -43,7 +43,8 @@ func (p Postgres) Execute() {
 
 	tabula := query.Tabula{
 		Headers: make(map[int]query.Header, lenColumns),
-		Rows:   make(map[int][]string),
+// 		Rows:    make(map[int][]string),
+		Rows:    make([][]string, 0),
 	}
 
 	for i, value := range columns {
@@ -59,14 +60,15 @@ func (p Postgres) Execute() {
 		values[i] = &value
 	}
 
-	rowNr := 1
+// 	rowNr := 1
 	for rows.Next() {
 		err := rows.Scan(values...)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		tabula.Rows[rowNr] = make([]string, lenColumns)
+// 		tabula.Rows[rowNr] = make([]string, lenColumns)
+        results := make([]string, lenColumns)
 		for i, value := range values {
 			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1) // TODO check if is date or leave out
 			valueLength := len(value) + 2
@@ -75,7 +77,8 @@ func (p Postgres) Execute() {
 				value = "NULL"
 			}
 
-			tabula.Rows[rowNr][i] = " " + value
+// 			tabula.Rows[rowNr][i] = " " + value
+            results[i] = " " + value
 			index := i + 1
 
 			if tabula.Headers[index].Length < valueLength {
@@ -85,8 +88,9 @@ func (p Postgres) Execute() {
 				}
 			}
 		}
-		rowNr++
+        tabula.Rows = append(tabula.Rows, results)
+// 		rowNr++
 	}
 
-    tabula.Generate()
+	tabula.Generate()
 }

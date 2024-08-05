@@ -2,10 +2,13 @@ local M = {}
 
 M.SETTINGS = {
     output = {
-        dest_folder = "/tmp"
+        dest_folder = "/tmp",
+        border_style = 1,
+        header_style_link = "Boolean",
     },
     db = {
-        default = 2,
+        default = 1,
+        -- connections not in this settings
         connections = {
             -- Mandatory name, engine, dbname
             {
@@ -32,6 +35,8 @@ M.SETTINGS = {
         log_debug = false
     }
 }
+
+M.default_db = M.SETTINGS.db.default
 
 function M.setup(opts)
 end

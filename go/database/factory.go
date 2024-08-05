@@ -10,8 +10,8 @@ type Executor interface {
 	Execute() // TODO return error
 }
 
-func Context(db, connStr, queries string) error {
-	switch db {
+func Context(db_engine, connStr, queries string) error {
+	switch db_engine {
 	case engine.POSTGRES:
 		engine.Postgres{
 			ConnStr: connStr,
