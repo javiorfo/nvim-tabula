@@ -3,20 +3,21 @@ package engine
 import (
 	"context"
 	"fmt"
+	"log"
+
+	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"log"
 )
 
 type Mongo struct {
-	ConnStr string
-	Queries string
+    model.Data	
 }
 
 const MONGO = "mongo"
 
-func (m Mongo) Execute() {
+func (m Mongo) Run() {
 	clientOptions := options.Client().ApplyURI(m.ConnStr)
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
@@ -47,3 +48,10 @@ func (m Mongo) Execute() {
 		fmt.Println(result)
 	}
 }
+
+func (m Mongo) GetTables() {
+}
+
+func (m Mongo) GetTableInfo() {
+}
+

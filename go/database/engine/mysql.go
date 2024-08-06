@@ -1,10 +1,17 @@
 package engine
 
+import "github.com/javiorfo/nvim-tabula/go/database/engine/model"
+
 type MySql struct {
-	ConnStr string
-	Queries string
+    model.Data
 }
 
 const MYSQL = "mysql"
 
-func (my MySql) Execute() {}
+func (my MySql) Run() {}
+
+func (m MySql) GetTables() {
+}
+
+func (m MySql) GetTableInfo() {
+}

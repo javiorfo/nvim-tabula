@@ -12,12 +12,8 @@ vim.api.nvim_create_user_command('TabulaRun', function()
     require("tabula.core").run()
 end, {})
 
-vim.api.nvim_create_user_command('TabulaShowTables', function()
-    require("tabula.core").show_tables()
-end, {})
-
-vim.api.nvim_create_user_command('TabulaShowTableInfo', function(opts)
---     require 'tabula.core'.show_table_info(opts.fargs)
+vim.api.nvim_create_user_command('TabulaTableInfo', function(opts)
+    require 'tabula.table'.show_table_info(opts.fargs)
 end, {
     nargs = 1,
     complete = function(_, _)
@@ -37,11 +33,11 @@ end, {
     end
 })
 
-vim.api.nvim_create_user_command('TabulaShowLogs', function()
+vim.api.nvim_create_user_command('TabulaLogs', function()
     require("tabula.core").show_logs()
 end, {})
 
-vim.api.nvim_create_user_command('TabulaShowDBInfo', function()
+vim.api.nvim_create_user_command('TabulaDBInfo', function()
     require("tabula.database").show_info()
 end, {})
 

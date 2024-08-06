@@ -13,7 +13,7 @@ function M.get_connection_string()
 end
 
 function M.build()
-    local root_path = util.lua_tabula_path:gsub("/lua/tabula", "")
+    local root_path = util.tabula_root_path
     local script = string.format(
     "%sscript/build.sh %s 2> >( while read line; do echo \"[ERROR][$(date '+%%m/%%d/%%Y %%T')]: ${line}\"; done >> %s)", root_path,
         root_path, util.tabula_log_file)
@@ -22,11 +22,6 @@ function M.build()
         speed_ms = 100,
         on_success = function()
             util.logger:info("  Tabula is ready to be used!")
-        end,
-        on_interrupted = function()
-            vim.cmd("redraw")
-            local msg = "Process interrupted!"
-            util.logger:info(msg)
         end
     }
 

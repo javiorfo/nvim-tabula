@@ -6,13 +6,13 @@ import (
 	"log"
 	"strings"
 
+	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
 	"github.com/javiorfo/nvim-tabula/go/database/query"
 	_ "github.com/lib/pq"
 )
 
 type Postgres struct {
-	ConnStr string
-	Queries string
+	model.Data
 }
 
 const POSTGRES = "postgres"
@@ -25,7 +25,7 @@ func (p Postgres) getDB() (*sql.DB, func()) {
 	return db, func() { db.Close() }
 }
 
-func (p Postgres) Execute() {
+func (p Postgres) Run() {
 	db, closer := p.getDB()
 	defer closer()
 
@@ -42,9 +42,9 @@ func (p Postgres) Execute() {
 	lenColumns := len(columns)
 
 	tabula := query.Tabula{
-		Headers: make(map[int]query.Header, lenColumns),
-// 		Rows:    make(map[int][]string),
-		Rows:    make([][]string, 0),
+		DestFolder: p.DestFolder,
+		Headers:    make(map[int]query.Header, lenColumns),
+		Rows:       make([][]string, 0),
 	}
 
 	for i, value := range columns {
@@ -60,25 +60,21 @@ func (p Postgres) Execute() {
 		values[i] = &value
 	}
 
-// 	rowNr := 1
 	for rows.Next() {
 		err := rows.Scan(values...)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-// 		tabula.Rows[rowNr] = make([]string, lenColumns)
-        results := make([]string, lenColumns)
+		results := make([]string, lenColumns)
 		for i, value := range values {
-			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1) // TODO check if is date or leave out
-			valueLength := len(value) + 2
-
+			value := strings.Replace(fmt.Sprintf("%v", *value.(*any)), " +0000 +0000", "", -1)
 			if value == "<nil>" {
 				value = "NULL"
 			}
 
-// 			tabula.Rows[rowNr][i] = " " + value
-            results[i] = " " + value
+			valueLength := len(value) + 2
+			results[i] = " " + value
 			index := i + 1
 
 			if tabula.Headers[index].Length < valueLength {
@@ -88,9 +84,39 @@ func (p Postgres) Execute() {
 				}
 			}
 		}
-        tabula.Rows = append(tabula.Rows, results)
-// 		rowNr++
+		tabula.Rows = append(tabula.Rows, results)
 	}
 
 	tabula.Generate()
+}
+
+func (p Postgres) GetTables() {
+    db, closer := p.getDB()
+	defer closer()
+
+	rows, err := db.Query("select table_name from information_schema.tables where table_schema = 'public'")
+	if err != nil {
+		log.Fatal("Error executing query:", err)
+	}
+	defer rows.Close()
+
+    values := make([]string, 0)
+	values = append(values, "return {\n")
+	for rows.Next() {
+		var table string
+		if err := rows.Scan(&table); err != nil {
+			log.Fatal("Error scanning row:", err)
+		}
+		values = append(values, fmt.Sprintf("    \"%s\",\n", table))
+	}
+	values = append(values, "}")
+
+	if err := rows.Err(); err != nil {
+		log.Fatal("Error iterating over rows:", err)
+	}
+
+    query.WriteTable(values, p.LuaTabulaPath, "tables.lua")
+}
+
+func (p Postgres) GetTableInfo() {
 }

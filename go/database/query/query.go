@@ -13,9 +13,9 @@ type Header struct {
 }
 
 type Tabula struct {
+    DestFolder string
 	Headers map[int]Header
-// 	Rows   map[int][]string
-	Rows   [][]string
+	Rows    [][]string
 }
 
 func (t Tabula) Generate() {
@@ -55,9 +55,9 @@ func (t Tabula) Generate() {
 
 	rows := t.Rows
 	table := make([]string, 3, (len(rows)*2)+3)
-    table[0] = header_up
-    table[1] = header_mid
-    table[2] = header_bottom
+	table[0] = fmt.Sprintf("%s\n", header_up)
+	table[1] = fmt.Sprintf("%s\n", header_mid)
+	table[2] = fmt.Sprintf("%s\n", header_bottom)
 
 	rowsLength := len(rows) - 1
 	rowFieldsLength := len(rows[1]) - 1
@@ -88,14 +88,14 @@ func (t Tabula) Generate() {
 				line += corner_bottom_right
 			}
 		}
-		table = append(table, value, line)
+		table = append(table, fmt.Sprintf("%s\n", value), fmt.Sprintf("%s\n", line))
 	}
 
 	for _, v := range table {
 		fmt.Println(v)
 	}
 
-//     writeTable(table)
+	WriteTable(table, t.DestFolder, "tabula")
 }
 
 func addSpaces(inputString string, length int) string {
@@ -109,8 +109,9 @@ func addSpaces(inputString string, length int) string {
 	return result
 }
 
-func writeTable(values []string) {
-	file, err := os.Create("1.tabula")
+func WriteTable(values []string, destFolder, filename string) {
+    fmt.Println(fmt.Sprintf("%s/%s", destFolder, filename))
+	file, err := os.Create(fmt.Sprintf("%s/%s", destFolder, filename))
 	if err != nil {
 		fmt.Println("Error creating file:", err)
 		return
@@ -119,8 +120,8 @@ func writeTable(values []string) {
 
 	writer := bufio.NewWriter(file)
 
-    for _, v := range values {
-		_, err := writer.WriteString(fmt.Sprintf("%s\n", v)) // agregar \n en la función principal
+	for _, v := range values {
+		_, err := writer.WriteString(v)
 		if err != nil {
 			fmt.Println("Error writing to file:", err)
 			return
