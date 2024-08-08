@@ -1,4 +1,4 @@
-package database
+package factory
 
 import (
 	"errors"
@@ -8,14 +8,12 @@ import (
 )
 
 type Executor interface {
-    // TODO return error
-	Run() 
-    GetTables()
-    GetTableInfo()
+	Run()
+	GetTables()
 }
 
-func Context(eng string, option model.Option, data model.Data) error {
-	switch eng {
+func Context(option model.Option, data model.Data) error {
+	switch data.Engine {
 	case engine.POSTGRES:
 		return run(engine.Postgres{Data: data}, option)
 	case engine.MONGO:
@@ -28,17 +26,14 @@ func Context(eng string, option model.Option, data model.Data) error {
 }
 
 func run(executor Executor, option model.Option) error {
-    switch option {
-    case model.RUN:
-        executor.Run()
-        return nil
-    case model.TABLES:
-        executor.GetTables()
-        return nil
-    case model.TABLE_INFO:
-        executor.GetTableInfo()
-        return nil
-    default:
-	    return errors.New("Option does not exist")
-    }
+	switch option {
+	case model.RUN:
+		executor.Run()
+		return nil
+	case model.TABLES:
+		executor.GetTables()
+		return nil
+	default:
+		return errors.New("Option does not exist")
+	}
 }

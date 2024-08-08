@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
-	"github.com/javiorfo/nvim-tabula/go/database/query"
+	"github.com/javiorfo/nvim-tabula/go/database/table"
 	_ "github.com/lib/pq"
 )
 
@@ -18,7 +18,7 @@ type Postgres struct {
 const POSTGRES = "postgres"
 
 func (p Postgres) getDB() (*sql.DB, func()) {
-	db, err := sql.Open(POSTGRES, p.ConnStr)
+	db, err := sql.Open(p.Engine, p.ConnStr)
 	if err != nil {
 		panic(err)
 	}
@@ -41,14 +41,15 @@ func (p Postgres) Run() {
 	}
 	lenColumns := len(columns)
 
-	tabula := query.Tabula{
-		DestFolder: p.DestFolder,
-		Headers:    make(map[int]query.Header, lenColumns),
-		Rows:       make([][]string, 0),
+	tabula := table.Tabula{
+		DestFolder:  p.DestFolder,
+		BorderStyle: p.BorderStyle,
+		Headers:     make(map[int]table.Header, lenColumns),
+		Rows:        make([][]string, 0),
 	}
 
 	for i, value := range columns {
-		tabula.Headers[i+1] = query.Header{
+		tabula.Headers[i+1] = table.Header{
 			Name:   " " + strings.ToUpper(value),
 			Length: len(value) + 2,
 		}
@@ -78,7 +79,7 @@ func (p Postgres) Run() {
 			index := i + 1
 
 			if tabula.Headers[index].Length < valueLength {
-				tabula.Headers[index] = query.Header{
+				tabula.Headers[index] = table.Header{
 					Name:   tabula.Headers[index].Name,
 					Length: valueLength,
 				}
@@ -91,7 +92,7 @@ func (p Postgres) Run() {
 }
 
 func (p Postgres) GetTables() {
-    db, closer := p.getDB()
+	db, closer := p.getDB()
 	defer closer()
 
 	rows, err := db.Query("select table_name from information_schema.tables where table_schema = 'public'")
@@ -100,14 +101,14 @@ func (p Postgres) GetTables() {
 	}
 	defer rows.Close()
 
-    values := make([]string, 0)
-	values = append(values, "return {\n")
+	values := make([]string, 0)
+	values = append(values, "return { ")
 	for rows.Next() {
 		var table string
 		if err := rows.Scan(&table); err != nil {
 			log.Fatal("Error scanning row:", err)
 		}
-		values = append(values, fmt.Sprintf("    \"%s\",\n", table))
+		values = append(values, fmt.Sprintf(" \"%s\", ", table))
 	}
 	values = append(values, "}")
 
@@ -115,8 +116,5 @@ func (p Postgres) GetTables() {
 		log.Fatal("Error iterating over rows:", err)
 	}
 
-    query.WriteTable(values, p.LuaTabulaPath, "tables.lua")
-}
-
-func (p Postgres) GetTableInfo() {
+	table.WriteToFile(p.LuaTabulaPath, "tables.lua", values...)
 }

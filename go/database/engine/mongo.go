@@ -52,6 +52,3 @@ func (m Mongo) Run() {
 func (m Mongo) GetTables() {
 }
 
-func (m Mongo) GetTableInfo() {
-}
-
