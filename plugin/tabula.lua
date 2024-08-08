@@ -17,19 +17,7 @@ vim.api.nvim_create_user_command('TabulaTableInfo', function(opts)
 end, {
     nargs = 1,
     complete = function(_, _)
-        -- TODO call to Go
-        local ok, tables = pcall(dofile, require'tabula.util'.lua_tabula_path .. 'tables.lua')
-        local names = {}
-        if ok then
-            if tables then
-               for _, v in pairs(tables) do
-                    table.insert(names, v)
-               end
-            end
-        else
-            table.insert(names, "no tables")
-        end
-        return names
+        return require'tabula.table'.get_tables()
     end
 })
 

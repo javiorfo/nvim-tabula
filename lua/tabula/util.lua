@@ -8,6 +8,7 @@ M.debug_header = string.format("[DEBUG][%s]:", os.date("%m/%d/%Y %H:%M:%S"))
 M.lua_tabula_path = debug.getinfo(1).source:match("@?(.*/)")
 M.lua_tabula_path = debug.getinfo(1).source:match("@?(.*/)")
 M.tabula_root_path = M.lua_tabula_path:gsub("/lua/tabula", "")
+M.tabula_bin_path = M.tabula_root_path .. "bin/tabula"
 
 function M.disable_editing_popup()
     -- Disable editing
