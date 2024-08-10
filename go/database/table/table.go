@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/javiorfo/nvim-tabula/go/database/table/border"
+	"github.com/javiorfo/nvim-tabula/go/logger"
 )
 
 type Header struct {
@@ -48,9 +49,9 @@ func (t Tabula) Generate() {
 
 	rows := t.Rows
 	table := make([]string, 3, (len(rows)*2)+3)
-	table[0] = fmt.Sprintf("%s\n", headerUp)
-	table[1] = fmt.Sprintf("%s\n", headerMid)
-	table[2] = fmt.Sprintf("%s\n", headerBottom)
+	table[0] = headerUp + "\n"
+	table[1] = headerMid + "\n"
+	table[2] = headerBottom + "\n"
 
 	rowsLength := len(rows) - 1
 	rowFieldsLength := len(rows[1]) - 1
@@ -81,11 +82,7 @@ func (t Tabula) Generate() {
 				line += b.CornerBottomRight
 			}
 		}
-		table = append(table, fmt.Sprintf("%s\n", value), fmt.Sprintf("%s\n", line))
-	}
-
-	for _, v := range table {
-		fmt.Println(v)
+		table = append(table, value + "\n", line + "\n")
 	}
 
 	WriteToFile(t.DestFolder, "tabula", table...)
@@ -103,10 +100,9 @@ func addSpaces(inputString string, length int) string {
 }
 
 func WriteToFile(destFolder, filename string, values ...string) {
-	fmt.Println(fmt.Sprintf("%s/%s", destFolder, filename))
 	file, err := os.Create(fmt.Sprintf("%s/%s", destFolder, filename))
 	if err != nil {
-		fmt.Println("Error creating file:", err)
+		logger.Errorf("Error creating file: %v", err)
 		return
 	}
 	defer file.Close()
@@ -116,13 +112,13 @@ func WriteToFile(destFolder, filename string, values ...string) {
 	for _, v := range values {
 		_, err := writer.WriteString(v)
 		if err != nil {
-			fmt.Println("Error writing to file:", err)
+			logger.Errorf("Error writing to file: %v", err)
 			return
 		}
 	}
 
 	if err := writer.Flush(); err != nil {
-		fmt.Println("Error flushing writer:", err)
+        logger.Errorf("Error flushing writer: %v", err)
 		return
 	}
 }

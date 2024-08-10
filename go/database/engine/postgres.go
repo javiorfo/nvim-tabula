@@ -8,6 +8,7 @@ import (
 
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
 	"github.com/javiorfo/nvim-tabula/go/database/table"
+	"github.com/javiorfo/nvim-tabula/go/logger"
 	_ "github.com/lib/pq"
 )
 
@@ -15,11 +16,10 @@ type Postgres struct {
 	model.Data
 }
 
-const POSTGRES = "postgres"
-
 func (p Postgres) getDB() (*sql.DB, func()) {
 	db, err := sql.Open(p.Engine, p.ConnStr)
 	if err != nil {
+		logger.Errorf("Error initializing %s, connStr: %s", p.Engine, p.ConnStr)
 		panic(err)
 	}
 	return db, func() { db.Close() }
@@ -31,13 +31,13 @@ func (p Postgres) Run() {
 
 	rows, err := db.Query(p.Queries)
 	if err != nil {
-		panic(err)
+		panic(err) // TODO Return error message to nvim
 	}
 	defer rows.Close()
 
 	columns, err := rows.Columns()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err) // TODO Return error message to nvim
 	}
 	lenColumns := len(columns)
 
@@ -64,7 +64,7 @@ func (p Postgres) Run() {
 	for rows.Next() {
 		err := rows.Scan(values...)
 		if err != nil {
-			log.Fatal(err)
+			log.Fatal(err) // TODO Return error message to nvim
 		}
 
 		results := make([]string, lenColumns)
@@ -97,7 +97,8 @@ func (p Postgres) GetTables() {
 
 	rows, err := db.Query("select table_name from information_schema.tables where table_schema = 'public'")
 	if err != nil {
-		log.Fatal("Error executing query:", err)
+		logger.Errorf("Error executing query:", err)
+		panic(err)
 	}
 	defer rows.Close()
 
@@ -113,7 +114,7 @@ func (p Postgres) GetTables() {
 	values = append(values, "}")
 
 	if err := rows.Err(); err != nil {
-		log.Fatal("Error iterating over rows:", err)
+		logger.Errorf("Error iterating over rows:", err)
 	}
 
 	table.WriteToFile(p.LuaTabulaPath, "tables.lua", values...)

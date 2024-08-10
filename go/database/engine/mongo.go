@@ -15,8 +15,6 @@ type Mongo struct {
     model.Data	
 }
 
-const MONGO = "mongo"
-
 func (m Mongo) Run() {
 	clientOptions := options.Client().ApplyURI(m.ConnStr)
 

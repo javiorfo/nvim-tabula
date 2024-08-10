@@ -7,6 +7,10 @@ import (
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
 )
 
+const MYSQL = "mysql"
+const POSTGRES = "postgres"
+const MONGO = "mongo"
+
 type Executor interface {
 	Run()
 	GetTables()
@@ -14,11 +18,11 @@ type Executor interface {
 
 func Context(option model.Option, data model.Data) error {
 	switch data.Engine {
-	case engine.POSTGRES:
+	case POSTGRES:
 		return run(engine.Postgres{Data: data}, option)
-	case engine.MONGO:
+	case MONGO:
 		return run(engine.Mongo{Data: data}, option)
-	case engine.MYSQL:
+	case MYSQL:
 		return run(engine.MySql{Data: data}, option)
 	default:
 		return errors.New("engine does not exist")
