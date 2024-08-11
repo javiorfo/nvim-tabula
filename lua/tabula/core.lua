@@ -40,23 +40,9 @@ local function get_buffer_content()
     end
 end
 
---[[ local function get_buffer_content_split()
-    local buf_number = vim.api.nvim_get_current_buf()
-    local lines = vim.api.nvim_buf_get_lines(buf_number, 0, -1, false)
-    local content = table.concat(lines, "\n")
-    local split_content = {}
-    for part in content:gmatch("[^;]+") do
-        table.insert(split_content, part:match("^%s*(.-)%s*$"))  -- Trim whitespace
-    end
-    for _, part in ipairs(split_content) do
-        print(part)
-    end
-end ]]
-
 function M.run()
     local queries = get_buffer_content()
     local engine = (setup.db and setup.db.connections and setup.db.connections[require'tabula'.default_db].engine) or ""
-    print(string.format("%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s", util.tabula_bin_path, engine, M.get_connection_string(), queries, setup.output.dest_folder))
     vim.fn.system(string.format("%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s", util.tabula_bin_path, engine, M.get_connection_string(), queries, setup.output.dest_folder))
 
     local orientation = "sp"
