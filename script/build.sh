@@ -2,7 +2,7 @@
 
 ROOT=$1
 
-(cd $ROOT/go && go build -o tabula cmd/main.go)
+(cd $ROOT/go && go build -o tabula main.go)
 
 if [ $? -ne 0 ]; then
     exit 1

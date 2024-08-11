@@ -25,7 +25,7 @@ func Context(option model.Option, data model.Data) error {
 	case MYSQL:
 		return run(engine.MySql{Data: data}, option)
 	default:
-		return errors.New("engine does not exist")
+        return errors.New("engine does not exist: " + data.Engine)
 	}
 }
 

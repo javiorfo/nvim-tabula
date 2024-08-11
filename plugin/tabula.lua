@@ -4,6 +4,9 @@ end
 
 vim.g.tabula = 1
 
+vim.api.nvim_set_keymap('v', '<C-t>', '<cmd>lua require("tabula.core").run()<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-t>', '<cmd>lua require("tabula.core").run()<CR>', { noremap = true, silent = true })
+
 vim.api.nvim_create_user_command('TabulaBuild', function()
     require("tabula.core").build()
 end, {})

@@ -12,6 +12,58 @@ function M.get_connection_string()
     end
 end
 
+local function get_buffer_content()
+    local mode = vim.api.nvim_get_mode().mode
+
+    if mode == 'v' or mode == 'V' or mode == '\22' then
+        vim.cmd("normal " .. vim.api.nvim_replace_termcodes("<esc>", true, true, true))
+        local start_pos = vim.fn.getpos("'<")
+        local end_pos = vim.fn.getpos("'>")
+
+        local lines = vim.api.nvim_buf_get_lines(0, start_pos[2] - 1, end_pos[2], false)
+        if #lines == 0 then
+            return ""
+        end
+
+        if start_pos[2] == end_pos[2] then
+            return lines[1]:sub(start_pos[3], end_pos[3])
+        else
+            lines[1] = lines[1]:sub(start_pos[3])
+            lines[#lines] = lines[#lines]:sub(1, end_pos[3])
+            return table.concat(lines, "")
+        end
+    else
+        local buf_number = vim.api.nvim_get_current_buf()
+        local lines = vim.api.nvim_buf_get_lines(buf_number, 0, -1, false)
+        local content = table.concat(lines, "")
+        return content
+    end
+end
+
+--[[ local function get_buffer_content_split()
+    local buf_number = vim.api.nvim_get_current_buf()
+    local lines = vim.api.nvim_buf_get_lines(buf_number, 0, -1, false)
+    local content = table.concat(lines, "\n")
+    local split_content = {}
+    for part in content:gmatch("[^;]+") do
+        table.insert(split_content, part:match("^%s*(.-)%s*$"))  -- Trim whitespace
+    end
+    for _, part in ipairs(split_content) do
+        print(part)
+    end
+end ]]
+
+function M.run()
+    local queries = get_buffer_content()
+    local engine = (setup.db and setup.db.connections and setup.db.connections[require'tabula'.default_db].engine) or ""
+    print(string.format("%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s", util.tabula_bin_path, engine, M.get_connection_string(), queries, setup.output.dest_folder))
+    vim.fn.system(string.format("%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s", util.tabula_bin_path, engine, M.get_connection_string(), queries, setup.output.dest_folder))
+
+    local orientation = "sp"
+    vim.cmd(string.format("%d%s %s", 20, orientation, "/tmp/tabula"))
+
+end
+
 function M.build()
     local root_path = util.tabula_root_path
     local script = string.format(

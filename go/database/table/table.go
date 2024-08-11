@@ -54,7 +54,7 @@ func (t Tabula) Generate() {
 	table[2] = headerBottom + "\n"
 
 	rowsLength := len(rows) - 1
-	rowFieldsLength := len(rows[1]) - 1
+	rowFieldsLength := len(rows[0]) - 1
 	for i, row := range rows {
 		value := b.Vertical
 		var line string

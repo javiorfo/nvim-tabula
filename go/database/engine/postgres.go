@@ -31,6 +31,7 @@ func (p Postgres) Run() {
 
 	rows, err := db.Query(p.Queries)
 	if err != nil {
+        logger.Errorf("Error executing query %v", err)
 		panic(err) // TODO Return error message to nvim
 	}
 	defer rows.Close()
