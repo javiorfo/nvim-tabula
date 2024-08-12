@@ -3,7 +3,7 @@ local M = {}
 M.SETTINGS = {
     output = {
         dest_folder = "/tmp",
-        border_style = 1,
+        border_style = 4,
         header_style_link = "Boolean",
     },
     db = {

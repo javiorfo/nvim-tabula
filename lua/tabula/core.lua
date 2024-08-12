@@ -43,7 +43,7 @@ end
 function M.run()
     local queries = get_buffer_content()
     local engine = (setup.db and setup.db.connections and setup.db.connections[require'tabula'.default_db].engine) or ""
-    vim.fn.system(string.format("%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s", util.tabula_bin_path, engine, M.get_connection_string(), queries, setup.output.dest_folder))
+    vim.fn.system(string.format("%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d", util.tabula_bin_path, engine, M.get_connection_string(), queries, setup.output.dest_folder, setup.output.border_style))
 
     local orientation = "sp"
     vim.cmd(string.format("%d%s %s", 20, orientation, "/tmp/tabula"))

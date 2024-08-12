@@ -85,6 +85,7 @@ func (t Tabula) Generate() {
 		table = append(table, value + "\n", line + "\n")
 	}
 
+    
 	WriteToFile(t.DestFolder, "tabula", table...)
 }
 

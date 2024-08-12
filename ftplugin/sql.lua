@@ -1,7 +1,7 @@
 local logger = require'tabula.util'.logger
 local sql_augroup = vim.api.nvim_create_augroup("SqlFileSettings", { clear = true })
 
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile", "BufEnter" }, {
+vim.api.nvim_create_autocmd({ "BufNewFile", "VimEnter" }, {
     group = sql_augroup,
     pattern = "*.sql",
     callback = function()
