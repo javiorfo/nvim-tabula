@@ -4,7 +4,7 @@ M.SETTINGS = {
     output = {
         dest_folder = "/tmp",
         border_style = 4,
-        header_style_link = "Boolean",
+        header_style_link = "Type",
     },
     db = {
         default = 1,

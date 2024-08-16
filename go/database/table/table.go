@@ -16,10 +16,11 @@ type Header struct {
 }
 
 type Tabula struct {
-	DestFolder  string
-	BorderStyle int
-	Headers     map[int]Header
-	Rows        [][]string
+	DestFolder      string
+	HeaderStyleLink string
+	BorderStyle     int
+	Headers         map[int]Header
+	Rows            [][]string
 }
 
 func (t Tabula) Generate() {
@@ -82,11 +83,19 @@ func (t Tabula) Generate() {
 				line += b.CornerBottomRight
 			}
 		}
-		table = append(table, value + "\n", line + "\n")
+		table = append(table, value+"\n", line+"\n")
 	}
+	fmt.Print(highlighting(t.Headers, t.HeaderStyleLink))
 
-    
 	WriteToFile(t.DestFolder, "tabula", table...)
+}
+
+func highlighting(headers map[int]Header, style string) string {
+	result := ""
+	for k, v := range headers {
+		result += fmt.Sprintf("syn match header%d '%s' | hi link header%d %s |", k, v.Name, k, style)
+	}
+	return result
 }
 
 func addSpaces(inputString string, length int) string {
@@ -104,6 +113,7 @@ func WriteToFile(destFolder, filename string, values ...string) {
 	file, err := os.Create(fmt.Sprintf("%s/%s", destFolder, filename))
 	if err != nil {
 		logger.Errorf("Error creating file: %v", err)
+		fmt.Printf("[ERROR] %v", err)
 		return
 	}
 	defer file.Close()
@@ -114,12 +124,14 @@ func WriteToFile(destFolder, filename string, values ...string) {
 		_, err := writer.WriteString(v)
 		if err != nil {
 			logger.Errorf("Error writing to file: %v", err)
+			fmt.Printf("[ERROR] %v", err)
 			return
 		}
 	}
 
 	if err := writer.Flush(); err != nil {
-        logger.Errorf("Error flushing writer: %v", err)
+		logger.Errorf("Error flushing writer: %v", err)
+		fmt.Printf("[ERROR] %v", err)
 		return
 	}
 }
