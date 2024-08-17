@@ -5,10 +5,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/javiorfo/nvim-tabula/go/database/table/border"
 	"github.com/javiorfo/nvim-tabula/go/logger"
 )
+
+const tabula_extension = "tabula"
 
 type Header struct {
 	Name   string
@@ -85,9 +88,12 @@ func (t Tabula) Generate() {
 		}
 		table = append(table, value+"\n", line+"\n")
 	}
-	fmt.Print(highlighting(t.Headers, t.HeaderStyleLink))
 
-	WriteToFile(t.DestFolder, "tabula", table...)
+    filePath := CreateTabulaFileFormat(t.DestFolder)
+	fmt.Println(highlighting(t.Headers, t.HeaderStyleLink))
+    fmt.Println(filePath)
+
+	WriteToFile(filePath, table...)
 }
 
 func highlighting(headers map[int]Header, style string) string {
@@ -109,8 +115,8 @@ func addSpaces(inputString string, length int) string {
 	return result
 }
 
-func WriteToFile(destFolder, filename string, values ...string) {
-	file, err := os.Create(fmt.Sprintf("%s/%s", destFolder, filename))
+func WriteToFile(filePath string, values ...string) {
+	file, err := os.Create(filePath)
 	if err != nil {
 		logger.Errorf("Error creating file: %v", err)
 		fmt.Printf("[ERROR] %v", err)
@@ -134,4 +140,8 @@ func WriteToFile(destFolder, filename string, values ...string) {
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
+}
+
+func CreateTabulaFileFormat(destFolder string) string {
+    return fmt.Sprintf("%s/%s.%s", destFolder, time.Now().Format("20060102-150405"), tabula_extension)
 }

@@ -33,33 +33,64 @@ func (p Postgres) Run() {
 	}
 	defer closer()
 
-    if query.IsSelectQuery(p.Queries) {
-        p.executeSelect(db)
-    } else {
-        p.execute(db)
-    }
+	if query.IsSelectQuery(p.Queries) {
+		p.executeSelect(db)
+	} else {
+		p.execute(db)
+	}
 }
 
 func (p Postgres) execute(db *sql.DB) {
-    res, err := db.Exec(p.Queries)
-	if err != nil {
-		logger.Errorf("Error executing query %v", err)
-		fmt.Printf("[ERROR] %v", err)
-        return
-	}
+	if !query.ContainsSemicolonInMiddle(p.Queries) {
+		res, err := db.Exec(p.Queries)
+		if err != nil {
+			logger.Errorf("Error executing query %v", err)
+			fmt.Printf("[ERROR] %v", err)
+			return
+		}
 
-	rowsAffected, err := res.RowsAffected()
-	if err != nil {
-		logger.Errorf("Error executing query %v", err)
-		fmt.Printf("[ERROR] %v", err)
-        return
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			logger.Errorf("Error executing query %v", err)
+			fmt.Printf("[ERROR] %v", err)
+			return
+		}
+
+		if query.IsInsertUpdateOrDelete(p.Queries) {
+			fmt.Print(fmt.Sprintf("  Row(s) affected: %d", rowsAffected))
+		} else {
+			fmt.Print("  Statement executed correctly.")
+		}
+	} else {
+		queries := query.SplitQueries(p.Queries)
+		results := make([]string, len(queries))
+		for i, q := range queries {
+			if res, err := db.Exec(q); err != nil {
+				logger.Errorf("Error executing query %v", err)
+				results[i] = fmt.Sprintf("%d)   %v\n", i+1, err)
+			} else {
+                if rowsAffected, err := res.RowsAffected(); err != nil {
+                    logger.Errorf("Error executing query %v", err)
+                    results[i] = fmt.Sprintf("%d)   %v\n", i+1, err)
+                } else {
+                    if query.IsInsertUpdateOrDelete(q) {
+                        results[i] = fmt.Sprintf("%d)   Row(s) affected: %d\n", i+1, rowsAffected)
+                    } else {
+                        results[i] = fmt.Sprintf("%d)   Statement executed correctly.\n", i+1)
+                    }
+                }
+            }
+		}
+		filePath := table.CreateTabulaFileFormat(p.DestFolder)
+		fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
+		fmt.Println(filePath)
+
+		table.WriteToFile(filePath, results...)
 	}
-    // TODO change message if there is no rows affected (drop, create)
-    table.WriteToFile(p.DestFolder, "tabula", fmt.Sprintf("Row(s) affected: %d", rowsAffected))
 }
 
 func (p Postgres) executeSelect(db *sql.DB) {
-    rows, err := db.Query(p.Queries)
+	rows, err := db.Query(p.Queries)
 	if err != nil {
 		logger.Errorf("Error executing query %v", err)
 		fmt.Printf("[ERROR] %v", err)
@@ -128,7 +159,7 @@ func (p Postgres) executeSelect(db *sql.DB) {
 	if len(tabula.Rows) > 0 {
 		tabula.Generate()
 	} else {
-		table.WriteToFile(tabula.DestFolder, "tabula", "Query has returned 0 results.")
+		fmt.Print("  Query has returned 0 results.")
 	}
 }
 
@@ -167,5 +198,5 @@ func (p Postgres) GetTables() {
 		return
 	}
 
-	table.WriteToFile(p.LuaTabulaPath, "tables.lua", values...)
+	table.WriteToFile(fmt.Sprintf("%s/%s", p.LuaTabulaPath, "tables.lua"), values...)
 }

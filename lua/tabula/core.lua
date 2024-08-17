@@ -1,13 +1,13 @@
-local setup = require'tabula'.SETTINGS
-local engines = require'tabula.engines'
-local util = require'tabula.util'
+local setup = require 'tabula'.SETTINGS
+local engines = require 'tabula.engines'
+local util = require 'tabula.util'
 local spinetta = require 'spinetta'
 local M = {}
 
 function M.get_connection_string()
     local db = setup.db
     if db.connections then
-        local connection = db.connections[require'tabula'.default_db]
+        local connection = db.connections[require 'tabula'.default_db]
         return engines.db[connection.engine].get_connection_string(connection)
     end
 end
@@ -42,25 +42,64 @@ end
 
 function M.run()
     local queries = get_buffer_content()
-    local engine = (setup.db and setup.db.connections and setup.db.connections[require'tabula'.default_db].engine) or ""
-    local result = vim.fn.system(string.format("%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s", util.tabula_bin_path, engine, M.get_connection_string(), queries, setup.output.dest_folder, setup.output.border_style, setup.output.header_style_link))
+    local engine = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db].engine) or ""
+    local dest_folder = setup.output.dest_folder
+    local script = string.format(
+    "%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s",
+        util.tabula_bin_path, engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
+        setup.output.header_style_link)
 
-    if string.sub(result, 1, 7) ~= "[ERROR]" then
-        local orientation = "sp"
-        vim.cmd(string.format("%d%s %s", 20, orientation, "/tmp/tabula"))
-        vim.cmd("setlocal nowrap")
-        util.logger:info("Query executed correctly")
-        vim.cmd(result)
-    else
-        util.logger:error(result)
+    local result = {}
+    local spinner = spinetta:new {
+        main_msg = "  Tabula   Executing query... ",
+        speed_ms = 100,
+        on_success = function()
+--             print(vim.inspect(result))
+            if string.sub(result[1], 1, 7) ~= "[ERROR]" then
+                if result[2] then
+                    vim.cmd(string.format("%dsp %s", setup.output.buffer_height, result[2]))
+                    vim.cmd("setlocal nowrap")
+                    util.logger:info("  Query executed correctly")
+                    vim.cmd(result[1])
+                else
+                    util.logger:info(result[1])
+                end
+            else
+                util.logger:error(result[1])
+            end
+        end
+    }
+
+    local function job_to_run(command)
+        local output = {}
+        local job_id = vim.fn.jobpid(vim.fn.jobstart(command, {
+            on_stdout = function(_, data, _)
+                for _, line in ipairs(data) do
+                    if line ~= "" then
+                        table.insert(output, line)
+                    end
+                end
+            end,
+            on_exit = function(_, _)
+                result = output
+            end,
+        }))
+        return spinetta.break_when_pid_is_complete(job_id)
     end
 
+    spinner:start(job_to_run(script))
 end
 
 function M.build()
+    if vim.fn.executable("go") == 0 then
+        util.logger:warn("Go is required. Install it to use this plugin and then execute manually :TabulaBuild")
+        return false
+    end
+
     local root_path = util.tabula_root_path
     local script = string.format(
-    "%sscript/build.sh %s 2> >( while read line; do echo \"[ERROR][$(date '+%%m/%%d/%%Y %%T')]: ${line}\"; done >> %s)", root_path,
+        "%sscript/build.sh %s 2> >( while read line; do echo \"[ERROR][$(date '+%%m/%%d/%%Y %%T')]: ${line}\"; done >> %s)",
+        root_path,
         root_path, util.tabula_log_file)
     local spinner = spinetta:new {
         main_msg = "  Tabula   Building Go binary... ",
