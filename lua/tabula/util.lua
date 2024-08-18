@@ -25,4 +25,36 @@ function M.disable_editing_popup()
     vim.api.nvim_buf_set_keymap(0, 'n', 'V', 'v:lua.Nothing()', { noremap = true, expr = true })
 end
 
+local function is_valid_UTF8(byte)
+    return byte >= 0 and byte <= 127
+end
+
+function M.count_UTF8_characters(str)
+    local count = 0
+    local i = 1
+    local length = #str
+
+    while i <= length do
+        local byte = string.byte(str, i)
+
+        if is_valid_UTF8(byte) then
+            count = count + 1
+            i = i + 1
+        elseif byte >= 192 and byte <= 223 then
+            count = count + 1
+            i = i + 2
+        elseif byte >= 224 and byte <= 239 then
+            count = count + 1
+            i = i + 3
+        elseif byte >= 240 and byte <= 247 then
+            count = count + 1
+            i = i + 4
+        else
+            i = i + 1
+        end
+    end
+
+    return count
+end
+
 return M

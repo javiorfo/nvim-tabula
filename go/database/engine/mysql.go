@@ -6,7 +6,10 @@ type MySql struct {
 	model.Data
 }
 
-func (my MySql) Run() {}
+func (my *MySql) Run() {}
 
-func (m MySql) GetTables() {
+func (m *MySql) GetTables() {
+}
+
+func (m *MySql) GetTableInfo() {
 }

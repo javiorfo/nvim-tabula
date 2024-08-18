@@ -17,8 +17,8 @@ func main() {
 	destFolder := flag.String("dest-folder", "/tmp", "Destinated folder for tabula files")
 	luaTabulaPath := flag.String("lua-tabula-path", "/home/javier/.local/share/nvim/lazy/nvim-tabula/lua/tabula/", "Folder where Lua files are stored in tabula")
 	tabulaLogFile := flag.String("tabula-log-file", "/home/javier/.local/state/nvim/tabula.log", "Neovim Tabula log file")
-	option := flag.Int("option", 1, "Options to execute: 1:run/2:tables")
-	headerStyleLink := flag.String("header-style-link", "Boolean", "hi link header type")
+    option := flag.Int("option", 1, "Options to execute: 1:run/2:tables/3:table-info")
+	headerStyleLink := flag.String("header-style-link", "Type", "hi link header type")
 
 	flag.Parse()
 

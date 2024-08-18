@@ -16,4 +16,3 @@ $GO_BINARY -engine "postgres" \
     -lua-tabula-path /tmp \
     -border-style 3 \
     -option 2 \
-    && cat /tmp/tables.lua

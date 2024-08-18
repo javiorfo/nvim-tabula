@@ -56,3 +56,5 @@ func ContainsSemicolonInMiddle(s string) bool {
 	}
 	return false
 }
+
+

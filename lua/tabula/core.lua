@@ -30,12 +30,12 @@ local function get_buffer_content()
         else
             lines[1] = lines[1]:sub(start_pos[3])
             lines[#lines] = lines[#lines]:sub(1, end_pos[3])
-            return table.concat(lines, "")
+            return table.concat(lines, " ")
         end
     else
         local buf_number = vim.api.nvim_get_current_buf()
         local lines = vim.api.nvim_buf_get_lines(buf_number, 0, -1, false)
-        local content = table.concat(lines, "")
+        local content = table.concat(lines, " ")
         return content
     end
 end
@@ -54,7 +54,6 @@ function M.run()
         main_msg = "  Tabula   Executing query... ",
         speed_ms = 100,
         on_success = function()
---             print(vim.inspect(result))
             if string.sub(result[1], 1, 7) ~= "[ERROR]" then
                 if result[2] then
                     vim.cmd(string.format("%dsp %s", setup.output.buffer_height, result[2]))

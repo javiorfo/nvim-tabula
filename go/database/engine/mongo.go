@@ -15,7 +15,7 @@ type Mongo struct {
     model.Data	
 }
 
-func (m Mongo) Run() {
+func (m *Mongo) Run() {
 	clientOptions := options.Client().ApplyURI(m.ConnStr)
 
 	client, err := mongo.Connect(context.Background(), clientOptions)
@@ -47,6 +47,9 @@ func (m Mongo) Run() {
 	}
 }
 
-func (m Mongo) GetTables() {
+func (m *Mongo) GetTables() {
 }
 
+func (m *Mongo) GetTableInfo() {
+
+}

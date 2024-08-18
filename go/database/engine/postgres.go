@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"unicode/utf8"
 
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
 	"github.com/javiorfo/nvim-tabula/go/database/query"
@@ -16,7 +17,7 @@ type Postgres struct {
 	model.Data
 }
 
-func (p Postgres) getDB() (*sql.DB, func(), error) {
+func (p *Postgres) getDB() (*sql.DB, func(), error) {
 	db, err := sql.Open(p.Engine, p.ConnStr)
 	if err != nil {
 		logger.Errorf("Error initializing %s, connStr: %s", p.Engine, p.ConnStr)
@@ -25,7 +26,7 @@ func (p Postgres) getDB() (*sql.DB, func(), error) {
 	return db, func() { db.Close() }, nil
 }
 
-func (p Postgres) Run() {
+func (p *Postgres) Run() {
 	db, closer, err := p.getDB()
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -40,7 +41,7 @@ func (p Postgres) Run() {
 	}
 }
 
-func (p Postgres) execute(db *sql.DB) {
+func (p *Postgres) execute(db *sql.DB) {
 	if !query.ContainsSemicolonInMiddle(p.Queries) {
 		res, err := db.Exec(p.Queries)
 		if err != nil {
@@ -89,7 +90,7 @@ func (p Postgres) execute(db *sql.DB) {
 	}
 }
 
-func (p Postgres) executeSelect(db *sql.DB) {
+func (p *Postgres) executeSelect(db *sql.DB) {
 	rows, err := db.Query(p.Queries)
 	if err != nil {
 		logger.Errorf("Error executing query %v", err)
@@ -115,9 +116,10 @@ func (p Postgres) executeSelect(db *sql.DB) {
 	}
 
 	for i, value := range columns {
+        name := " 󰠵 " + strings.ToUpper(value)
 		tabula.Headers[i+1] = table.Header{
-			Name:   " " + strings.ToUpper(value),
-			Length: len(value) + 2,
+			Name:   name,
+			Length: utf8.RuneCountInString(name) + 1,
 		}
 	}
 
@@ -142,7 +144,7 @@ func (p Postgres) executeSelect(db *sql.DB) {
 				value = "NULL"
 			}
 
-			valueLength := len(value) + 2
+			valueLength := utf8.RuneCountInString(value) + 2
 			results[i] = " " + value
 			index := i + 1
 
@@ -163,7 +165,7 @@ func (p Postgres) executeSelect(db *sql.DB) {
 	}
 }
 
-func (p Postgres) GetTables() {
+func (p *Postgres) GetTables() {
 	db, closer, err := p.getDB()
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -180,7 +182,6 @@ func (p Postgres) GetTables() {
 	defer rows.Close()
 
 	values := make([]string, 0)
-	values = append(values, "return { ")
 	for rows.Next() {
 		var table string
 		if err := rows.Scan(&table); err != nil {
@@ -188,15 +189,27 @@ func (p Postgres) GetTables() {
 			fmt.Printf("[ERROR] %v", err)
 			return
 		}
-		values = append(values, fmt.Sprintf(" \"%s\", ", table))
+		values = append(values, fmt.Sprintf("%s", table))
 	}
-	values = append(values, "}")
 
 	if err := rows.Err(); err != nil {
 		logger.Errorf("Error iterating over rows:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
-
-	table.WriteToFile(fmt.Sprintf("%s/%s", p.LuaTabulaPath, "tables.lua"), values...)
+    
+    fmt.Print(values)
 }
+
+func (p *Postgres) GetTableInfo() {
+    db, closer, err := p.getDB()
+	if err != nil {
+		fmt.Printf(err.Error())
+		return
+	}
+	defer closer()
+
+    p.Queries = p.GetTableInfoQuery(p.Queries)
+    p.executeSelect(db)
+}
+

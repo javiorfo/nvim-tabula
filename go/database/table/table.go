@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/javiorfo/nvim-tabula/go/database/table/border"
 	"github.com/javiorfo/nvim-tabula/go/logger"
@@ -106,9 +107,10 @@ func highlighting(headers map[int]Header, style string) string {
 
 func addSpaces(inputString string, length int) string {
 	result := inputString
+    lengthInputString := utf8.RuneCountInString(inputString)
 
-	if length > len(inputString) {
-		diff := length - len(inputString)
+	if length > lengthInputString {
+		diff := length - lengthInputString
 		result += strings.Repeat(" ", diff)
 	}
 
