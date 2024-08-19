@@ -45,20 +45,22 @@ function M.run()
     local engine = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db].engine) or ""
     local dest_folder = setup.output.dest_folder
     local script = string.format(
-    "%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s",
+        "%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s",
         util.tabula_bin_path, engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
         setup.output.header_style_link)
 
     local result = {}
+    local elapsed_time = 0
     local spinner = spinetta:new {
-        main_msg = "  Tabula   Executing query... ",
-        speed_ms = 100,
+        main_msg = "  Tabula   Executing query ",
+        speed_ms = 200,
+        spinner = util.get_numeral_sprinner(),
         on_success = function()
             if string.sub(result[1], 1, 7) ~= "[ERROR]" then
                 if result[2] then
                     vim.cmd(string.format("%dsp %s", setup.output.buffer_height, result[2]))
                     vim.cmd("setlocal nowrap")
-                    util.logger:info("  Query executed correctly")
+                    util.logger:info(string.format("  Query executed correctly [%.2f secs]", elapsed_time))
                     vim.cmd(result[1])
                 else
                     util.logger:info(result[1])
@@ -66,11 +68,16 @@ function M.run()
             else
                 util.logger:error(result[1])
             end
+        end,
+        on_interrupted = function()
+            vim.cmd("redraw")
+            util.logger:info("Process cancelled by the user")
         end
     }
 
     local function job_to_run(command)
         local output = {}
+        local start_time = os.time()
         local job_id = vim.fn.jobpid(vim.fn.jobstart(command, {
             on_stdout = function(_, data, _)
                 for _, line in ipairs(data) do
@@ -81,6 +88,8 @@ function M.run()
             end,
             on_exit = function(_, _)
                 result = output
+                local end_time = os.time()
+                elapsed_time = os.difftime(end_time, start_time)
             end,
         }))
         return spinetta.break_when_pid_is_complete(job_id)

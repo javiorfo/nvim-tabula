@@ -57,4 +57,13 @@ function M.count_UTF8_characters(str)
     return count
 end
 
+function M.get_numeral_sprinner()
+    local numbers = {}
+
+    for i = 1, 5000 do
+        table.insert(numbers, string.format("[%.2f secs]", i * 0.2))
+    end
+    return numbers
+end
+
 return M
