@@ -24,14 +24,7 @@ func main() {
 
 	logger.Initialize(*tabulaLogFile)
 
-	//     queries := "select cast(column_name as varchar), data_type, is_nullable from information_schema.columns where table_name = 'dummies';"
-
-	/*     engine := "mongo"
-	       connStr := "mongodb://admin:admin@localhost:27017/db_dummy"
-	   	queries := "select * from dummies;" */
-
-	// 	err := database.Context(engine, connStr, queries, destFolder, luaTabulaPath, tabulaLogFile, option)
-	if err := factory.Context(model.Option(*option), model.Data{
+	if err := factory.Context(model.Option(*option), model.ProtoSQL{
 		Engine:          *engine,
 		ConnStr:         *connStr,
 		Queries:         *queries,

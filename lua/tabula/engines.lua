@@ -1,6 +1,7 @@
 local host = "localhost"
 local default_posgres_port = "5432"
 local default_mongo_port = "27017"
+local default_mysql_port = "3306"
 
 return {
     db = {
@@ -15,6 +16,20 @@ return {
                     connection.dbname,
                     connection.user and "user=" .. connection.user or "",
                     connection.password and "password=" .. connection.password or ""
+                )
+            end
+        },
+        mysql = {
+            title = "MySQL",
+            default_port = default_mysql_port,
+            default_host = host,
+            get_connection_string = function(connection)
+                return string.format("%s%stcp(%s:%s)/%s",
+                    connection.user and connection.user .. ":" or "",
+                    connection.password and connection.password .. "@" or "",
+                    connection.host or host,
+                    connection.port or default_posgres_port,
+                    connection.dbname
                 )
             end
         },

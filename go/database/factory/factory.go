@@ -14,19 +14,19 @@ const MONGO = "mongo"
 type Executor interface {
 	Run()
 	GetTables()
-    GetTableInfo()
+	GetTableInfo()
 }
 
-func Context(option model.Option, data model.Data) error {
-	switch data.Engine {
+func Context(option model.Option, proto model.ProtoSQL) error {
+	switch proto.Engine {
 	case POSTGRES:
-		return run(&engine.Postgres{Data: data}, option)
+		return run(&engine.Postgres{ProtoSQL: proto}, option)
 	case MONGO:
-		return run(&engine.Mongo{Data: data}, option)
+		return run(&engine.Mongo{ProtoSQL: proto}, option)
 	case MYSQL:
-		return run(&engine.MySql{Data: data}, option)
+		return run(&engine.MySql{ProtoSQL: proto}, option)
 	default:
-        return errors.New("engine does not exist: " + data.Engine)
+		return errors.New("engine does not exist: " + proto.Engine)
 	}
 }
 

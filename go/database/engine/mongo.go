@@ -12,7 +12,7 @@ import (
 )
 
 type Mongo struct {
-    model.Data	
+    model.ProtoSQL	
 }
 
 func (m *Mongo) Run() {
