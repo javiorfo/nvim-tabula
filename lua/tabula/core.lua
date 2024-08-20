@@ -42,12 +42,17 @@ end
 
 function M.run()
     local queries = get_buffer_content()
-    local engine = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db].engine) or ""
+    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db]) or nil
+
+    if not conn then
+        return
+    end
+
     local dest_folder = setup.output.dest_folder
     local script = string.format(
-        "%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s",
-        util.tabula_bin_path, engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
-        setup.output.header_style_link)
+        "%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
+        util.tabula_bin_path, conn.engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
+        setup.output.header_style_link, util.tabula_log_file, conn.dbname)
 
     local result = {}
     local elapsed_time = 0

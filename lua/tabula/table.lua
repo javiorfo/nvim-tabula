@@ -29,11 +29,20 @@ end
 
 function M.show_table_info(args)
     local table_selected = args[1]
-    local engine = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db].engine) or ""
+    if table_selected == "" then
+        return
+    end
+
+    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db]) or nil
+
+    if not conn then
+        return
+    end
+
     local result = vim.fn.system(string.format(
-        "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s",
-        util.tabula_bin_path, engine, core.get_connection_string(), table_selected, setup.output.border_style,
-        setup.output.header_style_link))
+        "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
+        util.tabula_bin_path, conn.engine, core.get_connection_string(), table_selected, setup.output.border_style,
+        setup.output.header_style_link, util.tabula_log_file, conn.dbname))
 
     local line_1, tabula_file
 
@@ -73,9 +82,14 @@ function M.show_table_info(args)
 end
 
 function M.get_tables()
-    local engine = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db].engine) or ""
-    local result = vim.fn.system(string.format("%s -option 2 -engine %s -conn-str \"%s\"", util.tabula_bin_path, engine,
-        core.get_connection_string()))
+    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db]) or nil
+
+    if not conn then
+        return
+    end
+    local result = vim.fn.system(string.format("%s -option 2 -engine %s -conn-str \"%s\" -tabula-log-file %s -dbname %s",
+        util.tabula_bin_path, conn.engine,
+        core.get_connection_string(), util.tabula_log_file, conn.dbname))
 
     local str = result:gsub("%[", ""):gsub("%]", ""):gsub("^%s*(.-)%s*$", "%1")
 

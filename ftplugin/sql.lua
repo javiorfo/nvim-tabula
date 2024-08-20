@@ -8,7 +8,7 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "VimEnter" }, {
         local db = require 'tabula'.SETTINGS.db
         if db.connections then
             local connection = db.connections[require 'tabula'.default_db]
-            if connection.name and connection.dbname and connection.engine and require'tabula.engines'.db[connection.engine] then
+            if connection.name and connection.dbname and connection.engine and require 'tabula.engines'.db[connection.engine] then
                 logger:info(string.format("Database set to [%s]", connection.name))
             end
         else

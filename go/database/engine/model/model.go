@@ -14,10 +14,10 @@ import (
 type ProtoSQL struct {
 	Engine          string
 	ConnStr         string
+	DbName          string
 	Queries         string
 	BorderStyle     int
 	DestFolder      string
-	LuaTabulaPath   string
 	TabulaLogFile   string
 	HeaderStyleLink string
 	Option          Option
@@ -49,7 +49,7 @@ func (p *ProtoSQL) Run() {
 	defer closer()
 
 	if query.IsSelectQuery(p.Queries) {
-		p.executeSelect(db)
+		p.ExecuteSelect(db)
 	} else {
 		p.execute(db)
 	}
@@ -104,7 +104,7 @@ func (p *ProtoSQL) execute(db *sql.DB) {
 	}
 }
 
-func (p *ProtoSQL) executeSelect(db *sql.DB) {
+func (p *ProtoSQL) ExecuteSelect(db *sql.DB) {
 	rows, err := db.Query(p.Queries)
 	if err != nil {
 		logger.Errorf("Error executing query %v", err)
@@ -232,7 +232,7 @@ func (p *ProtoSQL) GetTableInfo() {
 	defer closer()
 
 	p.Queries = p.GetTableInfoQuery(p.Queries)
-	p.executeSelect(db)
+	p.ExecuteSelect(db)
 }
 
 func (ProtoSQL) GetTableInfoQuery(tableName string) string {

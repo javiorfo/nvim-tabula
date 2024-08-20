@@ -8,6 +8,7 @@ import (
 )
 
 const MYSQL = "mysql"
+const MSSQL = "mssql"
 const POSTGRES = "postgres"
 const MONGO = "mongo"
 
@@ -25,6 +26,8 @@ func Context(option model.Option, proto model.ProtoSQL) error {
 		return run(&engine.Mongo{ProtoSQL: proto}, option)
 	case MYSQL:
 		return run(&engine.MySql{ProtoSQL: proto}, option)
+	case MSSQL:
+		return run(&engine.MSSql{ProtoSQL: proto}, option)
 	default:
 		return errors.New("engine does not exist: " + proto.Engine)
 	}

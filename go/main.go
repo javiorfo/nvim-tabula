@@ -12,12 +12,12 @@ import (
 func main() {
 	engine := flag.String("engine", "", "Database engine")
 	connStr := flag.String("conn-str", "", "Database string connection")
+	dbName := flag.String("dbname", "", "Database name")
 	queries := flag.String("queries", "", "Database queries semicolon-separated")
 	borderStyle := flag.Int("border-style", 1, "Table border style")
 	destFolder := flag.String("dest-folder", "/tmp", "Destinated folder for tabula files")
-	luaTabulaPath := flag.String("lua-tabula-path", "/home/javier/.local/share/nvim/lazy/nvim-tabula/lua/tabula/", "Folder where Lua files are stored in tabula")
-	tabulaLogFile := flag.String("tabula-log-file", "/home/javier/.local/state/nvim/tabula.log", "Neovim Tabula log file")
-    option := flag.Int("option", 1, "Options to execute: 1:run/2:tables/3:table-info")
+	tabulaLogFile := flag.String("tabula-log-file", "", "Neovim Tabula log file")
+	option := flag.Int("option", 1, "Options to execute: 1:run/2:tables/3:table-info")
 	headerStyleLink := flag.String("header-style-link", "Type", "hi link header type")
 
 	flag.Parse()
@@ -27,10 +27,10 @@ func main() {
 	if err := factory.Context(model.Option(*option), model.ProtoSQL{
 		Engine:          *engine,
 		ConnStr:         *connStr,
+		DbName:          *dbName,
 		Queries:         *queries,
 		BorderStyle:     *borderStyle,
 		DestFolder:      *destFolder,
-		LuaTabulaPath:   *luaTabulaPath,
 		TabulaLogFile:   *tabulaLogFile,
 		HeaderStyleLink: *headerStyleLink,
 	}); err != nil {
