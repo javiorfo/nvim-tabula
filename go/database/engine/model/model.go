@@ -29,6 +29,7 @@ const (
 	RUN Option = iota + 1
 	TABLES
 	TABLE_INFO
+    PING
 )
 
 func (p *ProtoSQL) GetDB() (*sql.DB, func(), error) {
@@ -38,6 +39,22 @@ func (p *ProtoSQL) GetDB() (*sql.DB, func(), error) {
 		return nil, nil, fmt.Errorf("[ERROR] %v", err)
 	}
 	return db, func() { db.Close() }, nil
+}
+
+func (p *ProtoSQL) Ping() {
+    db, closer, err := p.GetDB()
+	if err != nil {
+		fmt.Printf(err.Error())
+		return
+	}
+	defer closer()
+
+    err = db.Ping()
+    if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+    }
+
+    fmt.Println("Successfully connected to the database!")
 }
 
 func (p *ProtoSQL) Run() {

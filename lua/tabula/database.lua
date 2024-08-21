@@ -1,16 +1,16 @@
 local popcorn = require 'popcorn'
 local borders = require 'popcorn.borders'
-local constants = require'tabula.constants'
-local engines = require'tabula.engines'
-local setup = require'tabula'.SETTINGS
-local util = require'tabula.util'
+local constants = require 'tabula.constants'
+local engines = require 'tabula.engines'
+local setup = require 'tabula'.SETTINGS
+local util = require 'tabula.util'
 
 local M = {}
 
 function M.select()
     local content = {}
     local db = setup.db
-    local default = require'tabula'.default_db
+    local default = require 'tabula'.default_db
     if db.connections then
         content = { { "󰆼 Database", "Type" } }
         for i, v in pairs(db.connections) do
@@ -37,7 +37,7 @@ function M.select()
             util.disable_editing_popup()
 
             if #content > 0 then
-                vim.api.nvim_win_set_cursor(0, {default + 1, 0})
+                vim.api.nvim_win_set_cursor(0, { default + 1, 0 })
                 vim.api.nvim_buf_set_keymap(0, 'n', '<C-space>',
                     '<cmd>lua require("tabula.database").set()<CR>', { noremap = true, silent = true })
 
@@ -46,9 +46,9 @@ function M.select()
                     callback = function()
                         local pos = vim.api.nvim_win_get_cursor(0)
                         if pos[1] < 2 then
-                            vim.api.nvim_win_set_cursor(0, {2, 0})
+                            vim.api.nvim_win_set_cursor(0, { 2, 0 })
                         end
-                        if pos[2] > 0  then
+                        if pos[2] > 0 then
                             vim.api.nvim_win_set_cursor(0, { pos[1], 0 })
                         end
                     end
@@ -65,7 +65,9 @@ local function select_or_unselect(lines, line_nr)
             local selected = vim.fn.getline('.')
             local final = tostring(selected):gsub(constants.UNCHECKED_ICON, constants.CHECKED_ICON)
             vim.fn.setline(line_nr, final)
-            require'tabula'.default_db = v - 1
+            require 'tabula'.default_db = v - 1
+            local connection = setup.db.connections[v - 1]
+            util.logger:info(string.format("Database set to [%s]", connection.name))
         else
             local unselected = vim.fn.getline(v)
             local final = tostring(unselected):gsub(constants.CHECKED_ICON, constants.UNCHECKED_ICON)
@@ -93,7 +95,7 @@ function M.show_info()
     local footer = { "" }
     local db = setup.db
     if db.connections then
-        local connection = db.connections[require'tabula'.default_db]
+        local connection = db.connections[require 'tabula'.default_db]
         local db_const_data = engines.db[connection.engine]
         footer = { db_const_data.title, "String" }
         content = {
@@ -102,8 +104,8 @@ function M.show_info()
             { "HOST     󰁕 " .. (connection.host or db_const_data.default_host) },
             { "PORT     󰁕 " .. (connection.port or db_const_data.default_port) },
             { "DB NAME  󰁕 " .. connection.dbname },
-            { "USER     󰁕 " .. (connection.user or "-") },
-            { "PASSWORD 󰁕 " .. (connection.password or "-") },
+            { "USER     󰁕 " .. (((connection.user and setup.view.show_user and connection.user) or connection.user and "********") or "-") },
+            { "PASSWORD 󰁕 " .. (((connection.password and setup.view.show_password and connection.password) or connection.password and "********") or "-") },
         }
     end
 
@@ -124,4 +126,5 @@ function M.show_info()
     }
     popcorn:new(popup_opts):pop()
 end
+
 return M

@@ -3,6 +3,11 @@ local util = require 'tabula.util'
 local engines = require 'tabula.engines'
 
 M.SETTINGS = {
+    view = {
+        popup_border = 1,
+        show_user = true,
+        show_password = true,
+    },
     output = {
         dest_folder = "/tmp",
         border_style = 1,
@@ -28,6 +33,17 @@ local function validate_default_connection(connections, index)
 end
 
 function M.setup(opts)
+    if opts.view then
+        local view = opts.view
+        if view.show_user ~= nil then
+            M.SETTINGS.view.show_user = (type(view.show_user) == "boolean" and view.show_user) or
+                M.SETTINGS.view.show_user
+        end
+        if view.show_password ~= nil then
+            M.SETTINGS.view.show_password = (type(view.show_password) == "boolean" and view.show_password) or
+                M.SETTINGS.view.show_password
+        end
+    end
     if opts.output then
         local op = opts.output
         if op.dest_folder then

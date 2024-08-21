@@ -16,6 +16,7 @@ type Executor interface {
 	Run()
 	GetTables()
 	GetTableInfo()
+    Ping()
 }
 
 func Context(option model.Option, proto model.ProtoSQL) error {
@@ -43,6 +44,9 @@ func run(executor Executor, option model.Option) error {
 		return nil
 	case model.TABLE_INFO:
 		executor.GetTableInfo()
+		return nil
+	case model.PING:
+		executor.Ping()
 		return nil
 	default:
 		return errors.New("Option does not exist")
