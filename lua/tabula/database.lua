@@ -29,7 +29,7 @@ function M.select()
     local popup_opts = {
         width = 40,
         height = #content + 3,
-        border = borders.rounded_corners_border,
+        border = borders.simple_thick_border,
         title = { "  TABULA - Select DB", "Boolean" },
         footer = { "<Ctrl-space> to select", "String" },
         content = content,
@@ -116,7 +116,7 @@ function M.show_info()
     local popup_opts = {
         width = 40,
         height = #content + 3,
-        border = borders.rounded_corners_border,
+        border = borders.simple_thick_border,
         title = { "  TABULA - DB Info", "Boolean" },
         footer = footer,
         content = content,

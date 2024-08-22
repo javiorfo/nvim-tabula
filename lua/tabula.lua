@@ -4,7 +4,6 @@ local engines = require 'tabula.engines'
 
 M.SETTINGS = {
     view = {
-        popup_border = 1,
         show_user = true,
         show_password = true,
     },

@@ -63,7 +63,7 @@ function M.show_table_info(args)
                 height = row_len + 2,
                 border = borders.simple_thick_border,
                 title = { "  Tabula - Table Info", "Boolean" },
-                footer = { "Table: " .. string.upper(table_selected), "String" },
+                footer = { ((conn.engine ~= "mongo" and "Table: ") or "Collection: ") .. string.upper(table_selected), "String" },
                 content = tabula_file,
                 do_after = function()
                     vim.cmd [[ setlocal nowrap ]]

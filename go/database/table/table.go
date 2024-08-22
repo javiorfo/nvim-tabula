@@ -147,3 +147,7 @@ func WriteToFile(filePath string, values ...string) {
 func CreateTabulaFileFormat(destFolder string) string {
     return fmt.Sprintf("%s/%s.%s", destFolder, time.Now().Format("20060102-150405"), tabula_extension)
 }
+
+func CreateTabulaMongoFileFormat(destFolder string) string {
+    return fmt.Sprintf("%s/%s.%s.%s", destFolder, time.Now().Format("20060102-150405"), tabula_extension, "json")
+}
