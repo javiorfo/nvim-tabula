@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
+	"time"
 	"unicode/utf8"
 
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
@@ -20,17 +21,17 @@ type Mongo struct {
 	model.ProtoSQL
 }
 
-func (m *Mongo) GetDB() (*mongo.Database, func(), error) {
+func (m *Mongo) getDB(c context.Context) (*mongo.Database, func(), error) {
 	clientOptions := options.Client().ApplyURI(m.ConnStr)
 
-	client, err := mongo.Connect(context.Background(), clientOptions)
+	client, err := mongo.Connect(c, clientOptions)
 	db := client.Database(m.DbName)
 	if err != nil {
 		logger.Errorf("Error initializing %s, connStr: %s", m.Engine, m.ConnStr)
 		return nil, nil, fmt.Errorf("[ERROR] %v", err)
 	}
 	closer := func() {
-		if err = client.Disconnect(context.Background()); err != nil {
+		if err = client.Disconnect(c); err != nil {
 			logger.Errorf("Error disconnecting from MongoDB: %v", err)
 			return
 		}
@@ -39,8 +40,9 @@ func (m *Mongo) GetDB() (*mongo.Database, func(), error) {
 }
 
 func (m *Mongo) Run() {
-	ctx := context.Background()
-	db, closer, err := m.GetDB()
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	db, closer, err := m.getDB(ctx)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
@@ -51,7 +53,7 @@ func (m *Mongo) Run() {
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		logger.Errorf("Error listing collection:", err)
+		logger.Errorf("Error finding collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -61,13 +63,13 @@ func (m *Mongo) Run() {
 	for cursor.Next(ctx) {
 		var result bson.M
 		if err := cursor.Decode(&result); err != nil {
-			logger.Errorf("Error listing collection:", err)
+			logger.Errorf("Error decoding collection:", err)
 			fmt.Printf("[ERROR] %v", err)
 			return
 		}
 		prettyJSON, err := json.MarshalIndent(result, "", "    ")
 		if err != nil {
-			logger.Errorf("Error listing collection:", err)
+			logger.Errorf("Error prettifying:", err)
 			fmt.Printf("[ERROR] %v", err)
 			return
 		}
@@ -75,7 +77,7 @@ func (m *Mongo) Run() {
 	}
 
 	if err := cursor.Err(); err != nil {
-		logger.Errorf("Error listing collection:", err)
+		logger.Errorf("Error in collection cursor:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -88,14 +90,16 @@ func (m *Mongo) Run() {
 }
 
 func (m *Mongo) GetTables() {
-	db, closer, err := m.GetDB()
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	db, closer, err := m.getDB(ctx)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
 	}
 	defer closer()
 
-	collections, err := db.ListCollections(context.Background(), bson.D{})
+	collections, err := db.ListCollections(ctx, bson.D{})
 	if err != nil {
 		logger.Errorf("Error listing collection:", err)
 		fmt.Printf("[ERROR] %v", err)
@@ -103,7 +107,7 @@ func (m *Mongo) GetTables() {
 	}
 
 	values := make([]string, 0)
-	for collections.Next(context.Background()) {
+	for collections.Next(ctx) {
 		var collection bson.M
 		err := collections.Decode(&collection)
 		if err != nil {
@@ -124,7 +128,10 @@ func (m *Mongo) GetTables() {
 }
 
 func (m *Mongo) GetTableInfo() {
-	db, closer, err := m.GetDB()
+    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	db, closer, err := m.getDB(ctx)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
@@ -132,11 +139,10 @@ func (m *Mongo) GetTableInfo() {
 	defer closer()
 
 	collection := db.Collection(m.Queries)
-	ctx := context.Background()
 
 	cursor, err := collection.Find(ctx, bson.D{})
 	if err != nil {
-		logger.Errorf("Error iterating over rows:", err)
+		logger.Errorf("Error listing collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -148,7 +154,7 @@ func (m *Mongo) GetTableInfo() {
 	for cursor.Next(ctx) {
 		var result bson.M
 		if err := cursor.Decode(&result); err != nil {
-			logger.Errorf("Error iterating over rows:", err)
+			logger.Errorf("Error decoding:", err)
 			fmt.Printf("[ERROR] %v", err)
 			return
 		}
@@ -161,7 +167,7 @@ func (m *Mongo) GetTableInfo() {
 	}
 
 	if err := cursor.Err(); err != nil {
-		logger.Errorf("Error iterating over rows:", err)
+		logger.Errorf("Error in collection cursor:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}

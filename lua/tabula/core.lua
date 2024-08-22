@@ -125,6 +125,18 @@ function M.build()
     spinner:start(spinetta.job_to_run(script))
 end
 
+function M.close()
+    for _, nr in ipairs(vim.api.nvim_list_bufs()) do
+        local buf_name = vim.api.nvim_buf_get_name(nr)
+        if vim.api.nvim_buf_is_loaded(nr) and (buf_name:find(".tabula$") or buf_name:find(".tabula.json$")) then
+            vim.cmd("bd! " .. buf_name)
+        end
+    end
+    if setup.output.dest_folder == "/tmp" then
+        os.execute("rm -f /tmp/*.tabula*")
+    end
+end
+
 function M.show_logs()
     vim.cmd(string.format("vsp %s | normal G", util.tabula_log_file))
 end

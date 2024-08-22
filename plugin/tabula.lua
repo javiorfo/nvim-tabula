@@ -15,6 +15,10 @@ vim.api.nvim_create_user_command('TabulaRun', function()
     require("tabula.core").run()
 end, {})
 
+vim.api.nvim_create_user_command('TabulaClose', function()
+    require("tabula.core").close()
+end, {})
+
 vim.api.nvim_create_user_command('TabulaTableInfo', function(opts)
     require 'tabula.table'.show_table_info(opts.fargs)
 end, {
