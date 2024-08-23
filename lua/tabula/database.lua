@@ -31,14 +31,14 @@ function M.select()
         height = #content + 3,
         border = borders.simple_thick_border,
         title = { "  TABULA - Select DB", "Boolean" },
-        footer = { "<Ctrl-space> to select", "String" },
+        footer = { setup.commands.select_db .. " to select", "String" },
         content = content,
         do_after = function()
             util.disable_editing_popup()
 
             if #content > 0 then
                 vim.api.nvim_win_set_cursor(0, { default + 1, 0 })
-                vim.api.nvim_buf_set_keymap(0, 'n', '<C-space>',
+                vim.api.nvim_buf_set_keymap(0, 'n', setup.commands.select_db,
                     '<cmd>lua require("tabula.database").set()<CR>', { noremap = true, silent = true })
 
                 vim.api.nvim_create_autocmd({ "CursorMoved" }, {

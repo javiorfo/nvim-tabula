@@ -3,6 +3,11 @@ local util = require 'tabula.util'
 local engines = require 'tabula.engines'
 
 M.SETTINGS = {
+    commands = {
+        select_db = '<C-space>',
+        execute = '<C-t>',
+        close = '<C-c>',
+    },
     view = {
         show_user = true,
         show_password = true,
@@ -32,6 +37,21 @@ local function validate_default_connection(connections, index)
 end
 
 function M.setup(opts)
+    if opts.commands then
+        local commands = opts.commands
+        if commands.select_db then
+            M.SETTINGS.commands.select_db = (type(commands.select_db) == "string" and commands.select_db) or
+                M.SETTINGS.commands.select_db
+        end
+        if commands.execute then
+            M.SETTINGS.commands.execute = (type(commands.execute) == "string" and commands.execute) or
+                M.SETTINGS.commands.execute
+        end
+        if commands.close then
+            M.SETTINGS.commands.close = (type(commands.close) == "string" and commands.close) or
+                M.SETTINGS.commands.close
+        end
+    end
     if opts.view then
         local view = opts.view
         if view.show_user ~= nil then
