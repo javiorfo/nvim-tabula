@@ -19,13 +19,8 @@ func IsInsertUpdateOrDelete(query string) bool {
 		return false
 	}
 
-	if strings.HasPrefix(strings.ToUpper(query), "INSERT") {
-		return true
-	}
-	if strings.HasPrefix(strings.ToUpper(query), "UPDATE") {
-		return true
-	}
-	if strings.HasPrefix(strings.ToUpper(query), "DELETE") {
+	if strings.HasPrefix(strings.ToUpper(query), "INSERT") || strings.HasPrefix(strings.ToUpper(query), "UPDATE") ||
+		strings.HasPrefix(strings.ToUpper(query), "DELETE") {
 		return true
 	}
 
@@ -56,5 +51,3 @@ func ContainsSemicolonInMiddle(s string) bool {
 	}
 	return false
 }
-
-

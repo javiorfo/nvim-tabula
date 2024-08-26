@@ -7,7 +7,7 @@ local default_mysql_port = "3306"
 local default_mssql_port = "1433"
 local default_informix_port = "1526"
 local go_executor = util.tabula_root_path .. "bin/tabula"
-local java_executor = util.tabula_root_path .. "java -jar bin/tabula.jar"
+local java_executor = string.format("java -jar %s%s", util.tabula_root_path, " bin/tabula.jar")
 
 return {
     db = {
