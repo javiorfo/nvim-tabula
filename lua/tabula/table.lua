@@ -3,6 +3,7 @@ local core = require 'tabula.core'
 local setup = require 'tabula'.SETTINGS
 local popcorn = require 'popcorn'
 local borders = require 'popcorn.borders'
+local engines = require 'tabula.engines'
 local M = {}
 
 local function get_file_line_info(filePath)
@@ -41,7 +42,7 @@ function M.show_table_info(args)
 
     local result = vim.fn.system(string.format(
         "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
-        util.tabula_bin_path, conn.engine, core.get_connection_string(), table_selected, setup.output.border_style,
+        engines.db[conn.engine].executor, conn.engine, core.get_connection_string(), table_selected, setup.output.border_style,
         setup.output.header_style_link, util.tabula_log_file, conn.dbname))
 
     local line_1, tabula_file
@@ -88,7 +89,7 @@ function M.get_tables()
         return
     end
     local result = vim.fn.system(string.format("%s -option 2 -engine %s -conn-str \"%s\" -tabula-log-file %s -dbname %s",
-        util.tabula_bin_path, conn.engine,
+        engines.db[conn.engine].executor, conn.engine,
         core.get_connection_string(), util.tabula_log_file, conn.dbname))
 
     local str = result:gsub("%[", ""):gsub("%]", ""):gsub("^%s*(.-)%s*$", "%1")

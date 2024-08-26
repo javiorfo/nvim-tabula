@@ -51,7 +51,7 @@ function M.run()
     local dest_folder = setup.output.dest_folder
     local script = string.format(
         "%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
-        util.tabula_bin_path, conn.engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
+        engines.db[conn.engine].executor, conn.engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
         setup.output.header_style_link, util.tabula_log_file, conn.dbname)
 
     local result = {}
@@ -115,7 +115,7 @@ function M.build()
         root_path,
         root_path, util.tabula_log_file)
     local spinner = spinetta:new {
-        main_msg = "  Tabula   Building Go binary... ",
+        main_msg = "  Tabula   Building binaries... ",
         speed_ms = 100,
         on_success = function()
             util.logger:info("  Tabula is ready to be used!")

@@ -3,3 +3,6 @@ tags
 
 # Go
 /bin/
+
+# Java
+/java/target/
