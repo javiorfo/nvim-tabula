@@ -6,4 +6,8 @@ tags
 
 # Java
 /java/target/
+/java/.classpath
+/java/.settings
+/java/.project
+/java/.factorypath
 

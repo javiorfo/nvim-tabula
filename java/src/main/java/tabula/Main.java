@@ -7,6 +7,7 @@ import org.apache.commons.cli.ParseException;
 
 import tabula.database.engine.model.ProtoSQL;
 import tabula.database.factory.DBFactory;
+import tabula.logger.LoggerUtil;
 
 public class Main {
     public static void main(String[] args) {
@@ -33,10 +34,11 @@ public class Main {
                     cmd.getOptionValue("q"),
                     Integer.valueOf(cmd.getOptionValue("b", "1")),
                     cmd.getOptionValue("d", "/tmp"),
-                    cmd.getOptionValue("l"),
                     cmd.getOptionValue("h", "Type"));
 
             var op = ProtoSQL.Option.get(Integer.valueOf(cmd.getOptionValue("o", "1")));
+
+            LoggerUtil.initialize(cmd.getOptionValue("l"));
 
             DBFactory.context(op, proto);
 

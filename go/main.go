@@ -31,7 +31,6 @@ func main() {
 		Queries:         *queries,
 		BorderStyle:     *borderStyle,
 		DestFolder:      *destFolder,
-		TabulaLogFile:   *tabulaLogFile,
 		HeaderStyleLink: *headerStyleLink,
 	}); err != nil {
 		log.Fatal(err)

@@ -32,7 +32,6 @@ public class ProtoSQL {
 
     private int borderStyle;
     private String destFolder;
-    private String tabulaLogFile;
     private String headerStyleLink;
 
     public enum Option {
@@ -178,27 +177,15 @@ public class ProtoSQL {
             }
         } catch (SQLException e) {
             System.out.printf("[ERROR] SQL %s", e.getMessage());
-        } finally {
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                    System.out.println("[ERROR] Closing connection: " + e.getMessage());
-                }
-            }
         }
     }
 
     public void getTables() {
-        Connection db = null;
-        Statement stmt = null;
-        ResultSet rs = null;
         List<String> values = new ArrayList<>();
 
-        try {
-            db = getConnection();
-            stmt = db.createStatement();
-            rs = stmt.executeQuery(this.queries);
+        try (Connection connection = getConnection();
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(this.queries)) {
 
             while (rs.next()) {
                 String table = rs.getString(1);
@@ -206,19 +193,7 @@ public class ProtoSQL {
             }
         } catch (SQLException e) {
             System.out.println("[ERROR] %s".formatted(e.getMessage()));
-        } finally {
-            try {
-                if (rs != null)
-                    rs.close();
-                if (stmt != null)
-                    stmt.close();
-                if (db != null)
-                    db.close();
-            } catch (SQLException e) {
-                System.out.println("[ERROR] %s".formatted(e.getMessage()));
-            }
         }
-
         System.out.println(values);
     }
 }

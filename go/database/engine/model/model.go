@@ -18,7 +18,6 @@ type ProtoSQL struct {
 	Queries         string
 	BorderStyle     int
 	DestFolder      string
-	TabulaLogFile   string
 	HeaderStyleLink string
 	Option          Option
 }
