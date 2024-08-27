@@ -8,7 +8,9 @@ function M.get_connection_string()
     local db = setup.db
     if db.connections then
         local connection = db.connections[require 'tabula'.default_db]
-        return engines.db[connection.engine].get_connection_string(connection)
+        local conn_str = engines.db[connection.engine].get_connection_string(connection)
+        util.logger:debug(conn_str)
+        return conn_str
     end
 end
 
@@ -54,6 +56,7 @@ function M.run()
         engines.db[conn.engine].executor, conn.engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
         setup.output.header_style_link, util.tabula_log_file, conn.dbname)
 
+    util.logger:debug(script)
     local result = {}
     local elapsed_time = 0
     local spinner = spinetta:new {
@@ -115,7 +118,7 @@ function M.build()
         root_path,
         root_path, util.tabula_log_file)
     local spinner = spinetta:new {
-        main_msg = "  Tabula   Building binaries... ",
+        main_msg = "  Tabula   Building plugin... ",
         speed_ms = 100,
         on_success = function()
             util.logger:info("  Tabula is ready to be used!")

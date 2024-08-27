@@ -30,6 +30,7 @@ end
 
 function M.show_table_info(args)
     local table_selected = args[1]
+    util.logger:debug(table_selected)
     if table_selected == "" then
         return
     end
@@ -44,6 +45,8 @@ function M.show_table_info(args)
         "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
         engines.db[conn.engine].executor, conn.engine, core.get_connection_string(), table_selected, setup.output.border_style,
         setup.output.header_style_link, util.tabula_log_file, conn.dbname))
+
+    util.logger:debug(result)
 
     local line_1, tabula_file
 
@@ -91,6 +94,8 @@ function M.get_tables()
     local result = vim.fn.system(string.format("%s -option 2 -engine %s -conn-str \"%s\" -tabula-log-file %s -dbname %s",
         engines.db[conn.engine].executor, conn.engine,
         core.get_connection_string(), util.tabula_log_file, conn.dbname))
+
+    util.logger:debug(result)
 
     local str = result:gsub("%[", ""):gsub("%]", ""):gsub("^%s*(.-)%s*$", "%1")
 

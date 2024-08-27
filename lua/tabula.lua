@@ -110,6 +110,8 @@ function M.setup(opts)
         M.SETTINGS.internal.log_debug = (type(int.log_debug) == "boolean" and int.log_debug) or
             M.SETTINGS.internal.log_debug
     end
+
+    util.logger:debug("Configuration: " .. vim.inspect(M.SETTINGS))
 end
 
 return M
