@@ -40,9 +40,9 @@ check_command() {
 if check_command java; then
     if check_java_version; then
         if check_command mvn; then
-            $(cd $ROOT/java && mvn clean install)
+            mvn -f $ROOT/java/pom.xml clean package
             cp $ROOT/java/target/tabula.jar $BIN
-            $(cd $ROOT/java && mvn clean)
+            mvn -f $ROOT/java/pom.xml clean
         fi
     fi
 fi

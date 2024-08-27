@@ -3,6 +3,7 @@ package engine
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -40,7 +41,7 @@ func (m *Mongo) getDB(c context.Context) (*mongo.Database, func(), error) {
 }
 
 func (m *Mongo) Run() {
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	db, closer, err := m.getDB(ctx)
 	if err != nil {
@@ -49,48 +50,73 @@ func (m *Mongo) Run() {
 	}
 	defer closer()
 
-	collection := db.Collection("dummies")
-
-	cursor, err := collection.Find(ctx, bson.D{})
+	mongoCommand, err := m.getQuerySections()
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
-	defer cursor.Close(ctx)
 
-	values := make([]string, 0)
-	for cursor.Next(ctx) {
-		var result bson.M
-		if err := cursor.Decode(&result); err != nil {
-			logger.Errorf("Error decoding collection:", err)
-			fmt.Printf("[ERROR] %v", err)
-			return
+	switch mongoCommand.Func {
+	case Find:
+        filter := bson.M{}
+		if len(mongoCommand.Params) > 2 {
+			if err := json.Unmarshal([]byte(mongoCommand.Params), &filter); err != nil {
+				fmt.Printf("[ERROR] parsing filter %v", err)
+				return
+			}
 		}
-		prettyJSON, err := json.MarshalIndent(result, "", "    ")
+
+	    collection := db.Collection(mongoCommand.Collection)
+		cursor, err := collection.Find(ctx, filter)
 		if err != nil {
-			logger.Errorf("Error prettifying:", err)
+			logger.Errorf("Error finding collection:", err)
 			fmt.Printf("[ERROR] %v", err)
 			return
 		}
-		values = append(values, string(prettyJSON))
-	}
+		defer cursor.Close(ctx)
 
-	if err := cursor.Err(); err != nil {
-		logger.Errorf("Error in collection cursor:", err)
-		fmt.Printf("[ERROR] %v", err)
+		values := make([]string, 0)
+		for cursor.Next(ctx) {
+			var result bson.M
+			if err := cursor.Decode(&result); err != nil {
+				logger.Errorf("Error decoding collection:", err)
+				fmt.Printf("[ERROR] %v", err)
+				return
+			}
+			prettyJSON, err := json.MarshalIndent(result, "", "    ")
+			if err != nil {
+				logger.Errorf("Error prettifying:", err)
+				fmt.Printf("[ERROR] %v", err)
+				return
+			}
+			values = append(values, string(prettyJSON))
+		}
+
+		if err := cursor.Err(); err != nil {
+			logger.Errorf("Error in collection cursor:", err)
+			fmt.Printf("[ERROR] %v", err)
+			return
+		}
+
+        if len(values) == 0 {
+		    fmt.Print("  Query has returned 0 results.")
+            return
+        }
+
+		filePath := table.CreateTabulaMongoFileFormat(m.DestFolder)
+		fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
+		fmt.Println(filePath)
+
+		table.WriteToFile(filePath, values...)
+	default:
+		fmt.Printf("[ERROR] %s is not an available function", mongoCommand.Func)
 		return
 	}
 
-	filePath := table.CreateTabulaMongoFileFormat(m.DestFolder)
-	fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
-	fmt.Println(filePath)
-
-	table.WriteToFile(filePath, values...)
 }
 
 func (m *Mongo) GetTables() {
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	db, closer, err := m.getDB(ctx)
 	if err != nil {
@@ -128,7 +154,7 @@ func (m *Mongo) GetTables() {
 }
 
 func (m *Mongo) GetTableInfo() {
-    ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	db, closer, err := m.getDB(ctx)
@@ -207,4 +233,68 @@ func (m *Mongo) GetTableInfo() {
 	}
 
 	tabula.Generate()
+}
+
+type MongoCommand struct {
+	Collection string
+	Func       MongoFunc
+	Params     string
+}
+
+type MongoFunc string
+
+const (
+	Find                   MongoFunc = "find"
+	FindOne                          = "findOne"
+	FindOneAndUpdate                 = "findOneAndUpdate"
+	FindOneAndDelete                 = "findOneAndDelete"
+	FindOneAndReplace                = "findOneAndReplace"
+	CountDocuments                   = "countDocuments"
+	EstimatedDocumentCount           = "estimatedDocumentCount"
+	InsertOne                        = "insertOne"
+	InsertMany                       = "insertMany"
+	UpdateOne                        = "updateOne"
+	UpdateMany                       = "updateMany"
+	ReplaceOne                       = "replaceOne"
+	DeleteOne                        = "deleteOne"
+	DeleteMany                       = "deleteMany"
+	Aggregate                        = "aggregate"
+	CreateIndex                      = "createIndex"
+	DropIndex                        = "dropIndex"
+	ListIndexes                      = "listIndexes"
+	Drop                             = "drop"
+	Rename                           = "rename"
+	Stats                            = "stats"
+)
+
+func (m *Mongo) getQuerySections() (*MongoCommand, error) {
+	if len(m.Queries) == 0 {
+		return nil, errors.New("Query empty.")
+	}
+
+	parts := strings.Split(m.Queries, ".")
+
+	var collection string
+	var function string
+	if len(parts) > 0 {
+		if parts[0] == "db" {
+			collection = parts[1]
+			function = parts[2]
+		} else {
+			collection = parts[0]
+			function = parts[1]
+		}
+
+		openParenIndex := strings.Index(function, "(")
+		if openParenIndex != -1 {
+			return &MongoCommand{
+				Collection: collection,
+				Func:       MongoFunc(function[:openParenIndex]),
+				Params:     function[openParenIndex+1 : len(function)-1],
+			}, nil
+		} else {
+			return nil, errors.New("Error format: " + function)
+		}
+	}
+	return nil, errors.New("Error format: " + m.Queries)
 }

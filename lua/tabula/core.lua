@@ -51,8 +51,9 @@ function M.run()
     end
 
     local dest_folder = setup.output.dest_folder
+    local format_query = (conn.engine == "mongo" and "'%s'") or '\"%s\"'
     local script = string.format(
-        "%s -engine %s -conn-str \"%s\" -queries \"%s\" -dest-folder %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
+        "%s -engine %s -conn-str \"%s\" -queries " .. format_query .. " -dest-folder %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
         engines.db[conn.engine].executor, conn.engine, M.get_connection_string(), queries, dest_folder, setup.output.border_style,
         setup.output.header_style_link, util.tabula_log_file, conn.dbname)
 
