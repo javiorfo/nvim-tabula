@@ -170,8 +170,6 @@ public class ProtoSQL {
             }
 
             if (!rows.isEmpty()) {
-                System.out.println(headers.toString());
-                System.out.println(rows.toString());
                 var tabula = new Tabula(destFolder, borderStyle, headerStyleLink, headers, rows);
                 tabula.generate();
             } else {
