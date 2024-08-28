@@ -61,6 +61,14 @@ func (m *Mongo) Run() {
         findOne(ctx, mongoCommand, db, m.DestFolder)
 	case CountDocuments:
         countDocuments(ctx, mongoCommand, db)
+	case InsertOne:
+        insertOne(ctx, mongoCommand, db)
+	case InsertMany:
+        insertMany(ctx, mongoCommand, db)
+	case DeleteOne:
+        deleteOne(ctx, mongoCommand, db)
+	case Drop:
+        dropCollection(ctx, mongoCommand, db)
 	default:
 		fmt.Printf("[ERROR] %s is not an available function", mongoCommand.FuncParam.Func)
 		return

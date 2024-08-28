@@ -22,11 +22,11 @@ type mongoFuncParam struct {
 }
 
 func newMongoFuncParam(s string) *mongoFuncParam {
-	openParenIndexExtra := strings.Index(s, "(")
-	if openParenIndexExtra != -1 {
+	index := strings.Index(s, "(")
+	if index != -1 {
 		return &mongoFuncParam{
-			Func:   mongoFunc(s[:openParenIndexExtra]),
-			Params: s[openParenIndexExtra+1 : len(s)-1],
+			Func:   mongoFunc(s[:index]),
+			Params: s[index+1 : len(s)-1],
 		}
 	}
 	return nil
@@ -41,20 +41,19 @@ const (
 	Limit                            = "limit"
 	CountDocuments                   = "countDocuments"
 	FindOne                          = "findOne"
+	InsertOne                        = "insertOne"
+	DeleteOne                        = "deleteOne"
+	Drop                             = "drop"
 
     // TODO
-	InsertOne                        = "insertOne"
 	InsertMany                       = "insertMany"
 	UpdateOne                        = "updateOne"
 	UpdateMany                       = "updateMany"
 	ReplaceOne                       = "replaceOne"
-	DeleteOne                        = "deleteOne"
 	DeleteMany                       = "deleteMany"
 	CreateIndex                      = "createIndex"
 	DropIndex                        = "dropIndex"
 	ListIndexes                      = "listIndexes"
-	Drop                             = "drop"
-	Rename                           = "rename"
 )
 
 func getQuerySections(query string) (*mongoCommand, error) {
@@ -94,11 +93,21 @@ func getQuerySections(query string) (*mongoCommand, error) {
 }
 
 func getBsonParsed(s string) (*primitive.M, error) {
-	filter := bson.M{}
+	bsonObj := bson.M{}
 	if len(s) > 2 {
-		if err := json.Unmarshal([]byte(s), &filter); err != nil {
+		if err := json.Unmarshal([]byte(s), &bsonObj); err != nil {
 			return nil, fmt.Errorf("parsing filter %v", err)
 		}
 	}
-	return &filter, nil
+	return &bsonObj, nil
+}
+
+func getArrayParsed(s string) ([]any, error) {
+	var arrayObj []any
+	if len(s) > 2 {
+		if err := json.Unmarshal([]byte(s), &arrayObj); err != nil {
+			return nil, fmt.Errorf("parsing filter %v", err)
+		}
+	}
+	return arrayObj, nil
 }

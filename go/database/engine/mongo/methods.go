@@ -139,3 +139,65 @@ func countDocuments(ctx context.Context, mongoCommand *mongoCommand, db *mongo.D
 
 	fmt.Printf("  Collection %s count: %d results.", mongoCommand.Collection, total)
 }
+
+func insertOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+	obj, err := getBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+    
+    result, err := db.Collection(mongoCommand.Collection).InsertOne(ctx, *obj)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	fmt.Printf("  Collection %s, document inserted with ID: %v", mongoCommand.Collection, result.InsertedID)
+}
+
+func insertMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+	array, err := getArrayParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+    
+    result, err := db.Collection(mongoCommand.Collection).InsertMany(ctx, array)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	fmt.Printf("  Collection %s, documents inserted with ID/s: %v", mongoCommand.Collection, result.InsertedIDs)
+}
+
+func deleteOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+	obj, err := getBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+    
+    result, err := db.Collection(mongoCommand.Collection).DeleteOne(ctx, *obj)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	fmt.Printf("  Collection %s, deleted: %d document/s.", mongoCommand.Collection, result.DeletedCount)
+}
+
+func dropCollection(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+    err := db.Collection(mongoCommand.Collection).Drop(ctx)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	fmt.Printf("  Collection %s dropped succesfully.", mongoCommand.Collection)
+}
