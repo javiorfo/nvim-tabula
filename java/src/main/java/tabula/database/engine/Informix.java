@@ -17,7 +17,7 @@ public class Informix implements Executor {
 
     @Override
     public void getTables() {
-        protoSQL.setQueries("SELECT tabname FROM systables WHERE tabtype = 'T';");
+        protoSQL.setQueries("SELECT tabname FROM systables WHERE tabtype = 'T' order by tabname;");
         protoSQL.getTables();
     }
 

@@ -12,7 +12,7 @@ type MySql struct {
 }
 
 func (ms *MySql) GetTables() {
-	ms.Queries = fmt.Sprintf("select table_name from information_schema.tables where table_schema = '%s'", ms.DbName)
+	ms.Queries = fmt.Sprintf("select table_name from information_schema.tables where table_schema = '%s' order by table_name", ms.DbName)
 	ms.ProtoSQL.GetTables()
 }
 

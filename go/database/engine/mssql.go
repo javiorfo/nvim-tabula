@@ -12,7 +12,7 @@ type MSSql struct {
 }
 
 func (ms *MSSql) GetTables() {
-	ms.Queries = "SELECT name AS table_name FROM sys.tables;"
+	ms.Queries = "SELECT name AS table_name FROM sys.tables order by name;"
 	ms.ProtoSQL.GetTables()
 }
 
