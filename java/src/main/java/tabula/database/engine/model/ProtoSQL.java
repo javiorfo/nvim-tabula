@@ -194,6 +194,6 @@ public class ProtoSQL {
         } catch (SQLException e) {
             System.out.println("[ERROR] %s".formatted(e.getMessage()));
         }
-        System.out.println(values);
+        System.out.print(values);
     }
 }
