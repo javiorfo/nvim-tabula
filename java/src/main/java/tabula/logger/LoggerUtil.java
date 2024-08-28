@@ -11,16 +11,17 @@ import java.util.logging.SimpleFormatter;
 
 public class LoggerUtil {
     private static Logger logger;
+    private static FileHandler fileHandler;
 
     private static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
     public static void initialize(String logFileName) {
         try {
             Files.createDirectories(Paths.get(logFileName).getParent());
-            var fileHandler = new FileHandler(logFileName, true);
+            fileHandler = new FileHandler(logFileName, true);
             fileHandler.setFormatter(new SimpleFormatter());
 
-            logger = Logger.getLogger("InfoLogger");
+            logger = Logger.getLogger("logger");
 
             logger.addHandler(fileHandler);
         } catch (IOException e) {
@@ -29,26 +30,36 @@ public class LoggerUtil {
         }
     }
 
-    public static void info(String message) {
+    public static void debug(String message) {
         var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-        logger.info(String.format("[INFO] [%s] %s", timestamp, message));
+        logger.info(String.format("[DEBUG] [%s] %s", timestamp, message));
+        close();
+    }
+
+    public static void debugf(String format, Object... args) {
+        var finalFormat = "[DEBUG] [%s] " + format;
+        var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
+        logger.info(String.format(finalFormat, timestamp, args));
+        close();
     }
 
     public static void error(String message) {
         var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
         logger.severe(String.format("[ERROR] [%s] %s", timestamp, message));
+        close();
     }
 
     public static void errorf(String format, Object... args) {
         var finalFormat = "[ERROR] [%s] " + format;
         var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
         logger.severe(String.format(finalFormat, timestamp, args));
+        close();
     }
 
-    public static void infof(String format, Object... args) {
-        var finalFormat = "[INFO] [%s] " + format;
-        var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-        logger.info(String.format(finalFormat, timestamp, args));
+    private static void close() {
+        if (fileHandler != null) {
+            fileHandler.close();
+        }
     }
 }
 

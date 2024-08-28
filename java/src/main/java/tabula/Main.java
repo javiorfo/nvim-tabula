@@ -1,6 +1,5 @@
 package tabula;
 
-import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -11,7 +10,7 @@ import tabula.logger.LoggerUtil;
 
 public class Main {
     public static void main(String[] args) {
-        Options options = new Options();
+        var options = new Options();
         options.addOption("e", "engine", true, "Database engine");
         options.addOption("c", "conn-str", true, "Database string connection");
         options.addOption("n", "dbname", true, "Database name");
@@ -22,11 +21,8 @@ public class Main {
         options.addOption("o", "option", true, "Options to execute: 1:run/2:tables/3:table-info/4:ping");
         options.addOption("h", "header-style-link", true, "hi link header type");
 
-        var parser = new DefaultParser();
-        CommandLine cmd;
-
         try {
-            cmd = parser.parse(options, args);
+            var cmd = new DefaultParser().parse(options, args);
             var proto = new ProtoSQL(
                     ProtoSQL.Engine.valueOf(cmd.getOptionValue("e").toUpperCase()),
                     cmd.getOptionValue("c"),

@@ -5,6 +5,7 @@ import (
 
 	"github.com/javiorfo/nvim-tabula/go/database/engine"
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
+	"github.com/javiorfo/nvim-tabula/go/database/engine/mongo"
 )
 
 const MYSQL = "mysql"
@@ -24,7 +25,7 @@ func Context(option model.Option, proto model.ProtoSQL) error {
 	case POSTGRES:
 		return run(&engine.Postgres{ProtoSQL: proto}, option)
 	case MONGO:
-		return run(&engine.Mongo{ProtoSQL: proto}, option)
+		return run(&mongo.Mongo{ProtoSQL: proto}, option)
 	case MYSQL:
 		return run(&engine.MySql{ProtoSQL: proto}, option)
 	case MSSQL:

@@ -1,0 +1,141 @@
+package mongo
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"strconv"
+
+	"github.com/javiorfo/nvim-tabula/go/database/table"
+	"github.com/javiorfo/nvim-tabula/go/logger"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+func find(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database, destFolder string) {
+	filter, err := getBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	findOptions := options.Find()
+	if mongoCommand.FuncParam2 != nil {
+		switch mongoCommand.FuncParam2.Func {
+		case Sort:
+			filter, err := getBsonParsed(mongoCommand.FuncParam2.Params)
+			if err != nil {
+				fmt.Printf("[ERROR] %v", err)
+				return
+			}
+			findOptions.SetSort(*filter)
+		case Limit:
+			n, err := strconv.ParseInt(mongoCommand.FuncParam2.Params, 10, 64)
+			if err != nil {
+				fmt.Printf("[ERROR] %v", err)
+				return
+			}
+			findOptions.SetLimit(n)
+		case Skip:
+			n, err := strconv.ParseInt(mongoCommand.FuncParam2.Params, 10, 64)
+			if err != nil {
+				fmt.Printf("[ERROR] %v", err)
+				return
+			}
+			findOptions.SetSkip(n)
+		}
+	}
+
+	cursor, err := db.Collection(mongoCommand.Collection).Find(ctx, *filter, findOptions)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+	defer cursor.Close(ctx)
+
+	values := make([]string, 0)
+	for cursor.Next(ctx) {
+		var result bson.M
+		if err := cursor.Decode(&result); err != nil {
+			logger.Errorf("Error decoding collection:", err)
+			fmt.Printf("[ERROR] %v", err)
+			return
+		}
+		prettyJSON, err := json.MarshalIndent(result, "", "    ")
+		if err != nil {
+			logger.Errorf("Error prettifying:", err)
+			fmt.Printf("[ERROR] %v", err)
+			return
+		}
+		values = append(values, string(prettyJSON))
+	}
+
+	if err := cursor.Err(); err != nil {
+		logger.Errorf("Error in collection cursor:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	if len(values) == 0 {
+		fmt.Print("  Query has returned 0 results.")
+		return
+	}
+
+	filePath := table.CreateTabulaMongoFileFormat(destFolder)
+	fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
+	fmt.Println(filePath)
+
+	table.WriteToFile(filePath, values...)
+}
+
+func findOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database, destFolder string) {
+	filter, err := getBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	var result bson.M
+	err = db.Collection(mongoCommand.Collection).FindOne(ctx, *filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			fmt.Print("  Query has returned 0 results.")
+            return
+		} else {
+			logger.Errorf("Error finding document:", err)
+			fmt.Printf("[ERROR] %v", err)
+			return
+		}
+	}
+	prettyJSON, err := json.MarshalIndent(result, "", "    ")
+	if err != nil {
+		logger.Errorf("Error prettifying:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	filePath := table.CreateTabulaMongoFileFormat(destFolder)
+	fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
+	fmt.Println(filePath)
+
+	table.WriteToFile(filePath, string(prettyJSON))
+}
+
+func countDocuments(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+	filter, err := getBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	total, err := db.Collection(mongoCommand.Collection).CountDocuments(ctx, *filter)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	fmt.Printf("  Collection %s count: %d results.", mongoCommand.Collection, total)
+}

@@ -26,11 +26,11 @@ public class Tabula {
     private List<List<String>> rows;
 
     public void generate() {
-        Border b = Border.getBorder(this.borderStyle);
+        var b = Border.getBorder(this.borderStyle);
 
-        StringBuilder headerUp = new StringBuilder(b.cornerUpLeft());
-        StringBuilder headerMid = new StringBuilder(b.vertical());
-        StringBuilder headerBottom = new StringBuilder(b.verticalLeft());
+        var headerUp = new StringBuilder(b.cornerUpLeft());
+        var headerMid = new StringBuilder(b.vertical());
+        var headerBottom = new StringBuilder(b.verticalLeft());
 
         int headersLength = headers.size();
         for (int key = 1; key <= headersLength; key++) {
@@ -56,7 +56,7 @@ public class Tabula {
         var rowsLength = rows.size() - 1;
         var rowFieldsLength = rows.get(0).size() - 1;
         for (int i = 0; i < rows.size(); i++) {
-            List<String> row = rows.get(i);
+            var row = rows.get(i);
             var value = new StringBuilder(b.vertical());
             var line = new StringBuilder();
 

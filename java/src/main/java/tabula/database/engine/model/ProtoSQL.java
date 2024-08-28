@@ -76,7 +76,9 @@ public class ProtoSQL {
             Class.forName(this.engine.getDriver());
             return DriverManager.getConnection(this.connStr);
         } catch (ClassNotFoundException | SQLException e) {
-            System.out.println("[ERROR] connecting DB: ".formatted(e.getMessage()));
+            var err = "[ERROR] connecting DB: ".formatted(e.getMessage());
+            LoggerUtil.error(err);
+            System.out.print(err);
             return null;
         }
     }
@@ -89,7 +91,7 @@ public class ProtoSQL {
                 execute(connection);
             }
         } catch (SQLException e) {
-            System.err.printf("[ERROR] %s".formatted(e.getMessage()));
+            System.out.print("[ERROR] %s".formatted(e.getMessage()));
         }
     }
 
@@ -127,7 +129,7 @@ public class ProtoSQL {
                 }
             }
 
-            String filePath = Tabula.createTabulaFileFormat(destFolder);
+            var filePath = Tabula.createTabulaFileFormat(destFolder);
             System.out.println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg");
             System.out.println(filePath);
 
@@ -154,7 +156,7 @@ public class ProtoSQL {
             while (rs.next()) {
                 List<String> resultRow = new ArrayList<>(columnCount);
                 for (int i = 1; i <= columnCount; i++) {
-                    String value = rs.getString(i);
+                    var value = rs.getString(i);
                     if (value == null) {
                         value = "NULL";
                     }
@@ -184,11 +186,11 @@ public class ProtoSQL {
         List<String> values = new ArrayList<>();
 
         try (Connection connection = getConnection();
-                Statement stmt = connection.createStatement();
-                ResultSet rs = stmt.executeQuery(this.queries)) {
+                var stmt = connection.createStatement();
+                var rs = stmt.executeQuery(this.queries)) {
 
             while (rs.next()) {
-                String table = rs.getString(1);
+                var table = rs.getString(1);
                 values.add(table);
             }
         } catch (SQLException e) {
