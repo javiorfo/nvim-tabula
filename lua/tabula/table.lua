@@ -97,7 +97,7 @@ function M.get_tables()
 
     util.logger:debug(result)
 
-    local str = result:gsub("%[", ""):gsub("%]", ""):gsub("^%s*(.-)%s*$", "%1"):gsub(",%s*$", "")
+    local str = result:gsub("%[", ""):gsub("%]", ""):gsub("^%s*(.-)%s*$", "%1"):gsub(",", "")
 
     local table_names = {}
     for word in str:gmatch("%S+") do
