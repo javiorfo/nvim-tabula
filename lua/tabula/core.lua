@@ -65,12 +65,13 @@ function M.run()
         speed_ms = 200,
         spinner = util.get_numeral_sprinner(),
         on_success = function()
+            util.logger:debug(vim.inspect(result))
             if string.sub(result[1], 1, 7) ~= "[ERROR]" then
                 if result[2] then
                     vim.cmd(string.format("%dsp %s", setup.output.buffer_height, result[2]))
                     vim.cmd("setlocal nowrap")
                     util.logger:info(string.format("  Query executed correctly [%.2f secs]", elapsed_time))
-                    vim.cmd(result[1])
+                    vim.cmd(result[1]:gsub("?", "󰠵"))
                 else
                     util.logger:info(result[1])
                 end

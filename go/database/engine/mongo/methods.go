@@ -188,6 +188,23 @@ func deleteOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Databa
 		return
 	}
 
+	fmt.Printf("  Collection %s, deleted: %d document.", mongoCommand.Collection, result.DeletedCount)
+}
+
+func deleteMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+	obj, err := getBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+    
+    result, err := db.Collection(mongoCommand.Collection).DeleteMany(ctx, *obj)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
 	fmt.Printf("  Collection %s, deleted: %d document/s.", mongoCommand.Collection, result.DeletedCount)
 }
 

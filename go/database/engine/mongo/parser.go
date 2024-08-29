@@ -42,15 +42,15 @@ const (
 	CountDocuments                   = "countDocuments"
 	FindOne                          = "findOne"
 	InsertOne                        = "insertOne"
+	InsertMany                       = "insertMany"
 	DeleteOne                        = "deleteOne"
+	DeleteMany                       = "deleteMany"
 	Drop                             = "drop"
 
     // TODO
-	InsertMany                       = "insertMany"
 	UpdateOne                        = "updateOne"
 	UpdateMany                       = "updateMany"
 	ReplaceOne                       = "replaceOne"
-	DeleteMany                       = "deleteMany"
 	CreateIndex                      = "createIndex"
 	DropIndex                        = "dropIndex"
 	ListIndexes                      = "listIndexes"
@@ -73,7 +73,7 @@ func getQuerySections(query string) (*mongoCommand, error) {
 		}
 		collection = parts[index]
 		function = parts[index+1]
-		if len(parts) > 2 {
+		if len(parts) > index+2 {
 			extra = parts[index+2]
 		}
 
@@ -103,11 +103,11 @@ func getBsonParsed(s string) (*primitive.M, error) {
 }
 
 func getArrayParsed(s string) ([]any, error) {
-	var arrayObj []any
+	var array []any
 	if len(s) > 2 {
-		if err := json.Unmarshal([]byte(s), &arrayObj); err != nil {
+		if err := json.Unmarshal([]byte(s), &array); err != nil {
 			return nil, fmt.Errorf("parsing filter %v", err)
 		}
 	}
-	return arrayObj, nil
+	return array, nil
 }
