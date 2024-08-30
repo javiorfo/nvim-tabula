@@ -208,6 +208,40 @@ func deleteMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Datab
 	fmt.Printf("  Collection %s, deleted: %d document/s.", mongoCommand.Collection, result.DeletedCount)
 }
 
+func updateOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+	obj, err := getTwoBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+    
+    result, err := db.Collection(mongoCommand.Collection).UpdateOne(ctx, obj.First, obj.Second)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	fmt.Printf("  Collection %s, document updated with ID: %v", mongoCommand.Collection, result.ModifiedCount)
+}
+
+func updateMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
+	obj, err := getTwoBsonParsed(mongoCommand.FuncParam.Params)
+	if err != nil {
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+    
+    result, err := db.Collection(mongoCommand.Collection).UpdateMany(ctx, obj.First, obj.Second)
+	if err != nil {
+		logger.Errorf("Error finding collection:", err)
+		fmt.Printf("[ERROR] %v", err)
+		return
+	}
+
+	fmt.Printf("  Collection %s, document updated with ID/s: %v", mongoCommand.Collection, result.ModifiedCount)
+}
+
 func dropCollection(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
     err := db.Collection(mongoCommand.Collection).Drop(ctx)
 	if err != nil {

@@ -35,25 +35,19 @@ func newMongoFuncParam(s string) *mongoFuncParam {
 type mongoFunc string
 
 const (
-	Find                   mongoFunc = "find"
-	Sort                             = "sort"
-	Skip                             = "skip"
-	Limit                            = "limit"
-	CountDocuments                   = "countDocuments"
-	FindOne                          = "findOne"
-	InsertOne                        = "insertOne"
-	InsertMany                       = "insertMany"
-	DeleteOne                        = "deleteOne"
-	DeleteMany                       = "deleteMany"
-	Drop                             = "drop"
-
-    // TODO
-	UpdateOne                        = "updateOne"
-	UpdateMany                       = "updateMany"
-	ReplaceOne                       = "replaceOne"
-	CreateIndex                      = "createIndex"
-	DropIndex                        = "dropIndex"
-	ListIndexes                      = "listIndexes"
+	Find           mongoFunc = "find"
+	Sort                     = "sort"
+	Skip                     = "skip"
+	Limit                    = "limit"
+	CountDocuments           = "countDocuments"
+	FindOne                  = "findOne"
+	InsertOne                = "insertOne"
+	InsertMany               = "insertMany"
+	DeleteOne                = "deleteOne"
+	DeleteMany               = "deleteMany"
+	UpdateOne                = "updateOne"
+	UpdateMany               = "updateMany"
+	Drop                     = "drop"
 )
 
 func getQuerySections(query string) (*mongoCommand, error) {
@@ -110,4 +104,32 @@ func getArrayParsed(s string) ([]any, error) {
 		}
 	}
 	return array, nil
+}
+
+type parsedBson struct {
+	First  primitive.M
+	Second primitive.M
+}
+
+func getTwoBsonParsed(s string) (*parsedBson, error) {
+	parts := strings.SplitN(s, "},", 2)
+	length := len(parts)
+	if length != 2 {
+		return nil, fmt.Errorf("could not split the string. Length: %d", length)
+	}
+
+	filterStr := parts[0] + "}"
+	updateStr := parts[1][1:]
+
+	var first bson.M
+	if err := json.Unmarshal([]byte(filterStr), &first); err != nil {
+		return nil, fmt.Errorf("parsing first %v", err)
+	}
+
+	var second bson.M
+	if err := json.Unmarshal([]byte(updateStr), &second); err != nil {
+		return nil, fmt.Errorf("parsing second %v", err)
+	}
+
+	return &parsedBson{First: first, Second: second}, nil
 }

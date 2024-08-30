@@ -69,6 +69,10 @@ func (m *Mongo) Run() {
         deleteOne(ctx, mongoCommand, db)
 	case DeleteMany:
         deleteMany(ctx, mongoCommand, db)
+	case UpdateOne:
+        updateOne(ctx, mongoCommand, db)
+	case UpdateMany:
+        updateMany(ctx, mongoCommand, db)
 	case Drop:
         dropCollection(ctx, mongoCommand, db)
 	default:

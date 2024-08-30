@@ -72,7 +72,7 @@ function M.show_table_info(args)
                 do_after = function()
                     vim.cmd [[ setlocal nowrap ]]
                     vim.cmd [[ setl noma ]]
-                    vim.cmd(line_1)
+                    vim.cmd(line_1:gsub("?", "󰠵"))
                 end
             }
 
