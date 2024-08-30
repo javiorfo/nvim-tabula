@@ -110,7 +110,7 @@ public class ProtoSQL {
                     System.out.println("  Statement executed correctly.");
                 }
             } catch (SQLException e) {
-                LoggerUtil.errorf("Error executing query: %s", e.getMessage());
+                LoggerUtil.error("Error executing query: %s".formatted(e.getMessage()));
                 System.out.printf("[ERROR] %s", e.getMessage());
             }
         } else {
@@ -128,13 +128,13 @@ public class ProtoSQL {
                         results[i] = String.format("%d)   Statement executed correctly.\n", i + 1);
                     }
                 } catch (SQLException e) {
-                    LoggerUtil.errorf("Error executing query: %s", e.getMessage());
+                    LoggerUtil.error("Error executing query: %s".formatted(e.getMessage()));
                     results[i] = String.format("%d)   %s\n", i + 1, e.getMessage());
                 }
             }
 
             var filePath = Tabula.createTabulaFileFormat(destFolder);
-            LoggerUtil.debugf("File path: %s", filePath);
+            LoggerUtil.debug("File path: %s".formatted(filePath));
             System.out.println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg");
             System.out.println(filePath);
 
@@ -143,7 +143,7 @@ public class ProtoSQL {
     }
 
     public void executeSelect(Connection connection) {
-        LoggerUtil.debugf("Query to exexute in select %s", this.queries);
+        LoggerUtil.debug("Query to exexute in select %s".formatted(this.queries));
 
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(this.queries)) {
             List<String> columns = new ArrayList<>();
@@ -191,7 +191,7 @@ public class ProtoSQL {
     public void getTables() {
         List<String> values = new ArrayList<>();
 
-        LoggerUtil.debugf("Query to get tables %s", this.queries);
+        LoggerUtil.debug("Query to get tables %s".formatted(this.queries));
         try (Connection connection = getConnection();
                 var stmt = connection.createStatement();
                 var rs = stmt.executeQuery(this.queries)) {

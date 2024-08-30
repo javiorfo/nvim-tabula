@@ -89,7 +89,7 @@ public class Tabula {
         }
 
         var filePath = createTabulaFileFormat(destFolder);
-        LoggerUtil.debugf("File path: %s", filePath);
+        LoggerUtil.debug("File path: %s".formatted(filePath));
         System.out.println(highlighting(headers, headerStyleLink));
         System.out.println(filePath);
 
@@ -103,7 +103,7 @@ public class Tabula {
             var v = entry.getValue();
             result.append(String.format("syn match header%d '%s' | hi link header%d %s |", k, v.getName(), k, style));
         }
-        LoggerUtil.debugf("Highlight match: %s", result.toString());
+        LoggerUtil.debug("Highlight match: %s".formatted(result.toString()));
         return result.toString();
     }
 

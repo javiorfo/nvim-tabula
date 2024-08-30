@@ -37,7 +37,7 @@ public class Main {
 
             LoggerUtil.initialize(cmd.getOptionValue("l"), Boolean.valueOf(cmd.getOptionValue("g")));
 
-            LoggerUtil.debugf("ProtoSQL obj: %s", proto.toString());
+            LoggerUtil.debug("ProtoSQL obj: %s".formatted(proto.toString()));
 
             DBFactory.context(op, proto);
 
