@@ -39,7 +39,7 @@ public class LoggerUtil {
         }
     }
 
-    public static void debugf(String format, Object... args) {
+    public static void debugf(String format, String... args) {
         if (logDebug) {
             var finalFormat = "[DEBUG] [%s] [JAVA] " + format;
             var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
@@ -52,7 +52,7 @@ public class LoggerUtil {
         logger.severe(String.format("[ERROR] [%s] [JAVA] %s", timestamp, message));
     }
 
-    public static void errorf(String format, Object... args) {
+    public static void errorf(String format, String... args) {
         var finalFormat = "[ERROR] [%s] [JAVA] " + format;
         var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
         logger.severe(String.format(finalFormat, timestamp, args));
