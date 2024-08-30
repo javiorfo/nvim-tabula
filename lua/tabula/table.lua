@@ -42,9 +42,10 @@ function M.show_table_info(args)
     end
 
     local result = vim.fn.system(string.format(
-        "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s",
-        engines.db[conn.engine].executor, conn.engine, core.get_connection_string(), table_selected, setup.output.border_style,
-        setup.output.header_style_link, util.tabula_log_file, conn.dbname))
+        "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s -log-debug %s",
+        engines.db[conn.engine].executor, conn.engine, core.get_connection_string(), table_selected,
+        setup.output.border_style,
+        setup.output.header_style_link, util.tabula_log_file, conn.dbname, setup.internal.log_debug))
 
     util.logger:debug(result)
 
@@ -91,9 +92,10 @@ function M.get_tables()
     if not conn then
         return
     end
-    local result = vim.fn.system(string.format("%s -option 2 -engine %s -conn-str \"%s\" -tabula-log-file %s -dbname %s",
+    local result = vim.fn.system(string.format(
+        "%s -option 2 -engine %s -conn-str \"%s\" -tabula-log-file %s -dbname %s -log-debug %s",
         engines.db[conn.engine].executor, conn.engine,
-        core.get_connection_string(), util.tabula_log_file, conn.dbname))
+        core.get_connection_string(), util.tabula_log_file, conn.dbname, setup.internal.log_debug))
 
     util.logger:debug(result)
 

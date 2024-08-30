@@ -15,6 +15,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import tabula.database.query.QueryUtils;
+import tabula.logger.LoggerUtil;
 
 @AllArgsConstructor
 @Getter
@@ -88,6 +89,7 @@ public class Tabula {
         }
 
         var filePath = createTabulaFileFormat(destFolder);
+        LoggerUtil.debugf("File path: %s", filePath);
         System.out.println(highlighting(headers, headerStyleLink));
         System.out.println(filePath);
 
@@ -101,6 +103,7 @@ public class Tabula {
             var v = entry.getValue();
             result.append(String.format("syn match header%d '%s' | hi link header%d %s |", k, v.getName(), k, style));
         }
+        LoggerUtil.debugf("Highlight match: %s", result.toString());
         return result.toString();
     }
 

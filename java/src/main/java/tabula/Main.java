@@ -20,6 +20,7 @@ public class Main {
         options.addOption("l", "tabula-log-file", true, "Neovim Tabula log file");
         options.addOption("o", "option", true, "Options to execute: 1:run/2:tables/3:table-info/4:ping");
         options.addOption("h", "header-style-link", true, "hi link header type");
+        options.addOption("g", "log-debug", true, "Enable debug level logger");
 
         try {
             var cmd = new DefaultParser().parse(options, args);
@@ -34,9 +35,13 @@ public class Main {
 
             var op = ProtoSQL.Option.get(Integer.valueOf(cmd.getOptionValue("o", "1")));
 
-            LoggerUtil.initialize(cmd.getOptionValue("l"));
+            LoggerUtil.initialize(cmd.getOptionValue("l"), Boolean.valueOf(cmd.getOptionValue("g")));
+
+            LoggerUtil.debugf("ProtoSQL obj: %s", proto.toString());
 
             DBFactory.context(op, proto);
+
+            LoggerUtil.close();
 
         } catch (ParseException e) {
             System.out.println("[ERROR] parsing command line arguments: " + e.getMessage());

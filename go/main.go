@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"log"
 
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
 	"github.com/javiorfo/nvim-tabula/go/database/factory"
@@ -19,10 +18,12 @@ func main() {
 	tabulaLogFile := flag.String("tabula-log-file", "", "Neovim Tabula log file")
     option := flag.Int("option", 1, "Options to execute: 1:run/2:tables/3:table-info/4:ping")
 	headerStyleLink := flag.String("header-style-link", "Type", "hi link header type")
+    logDebug := flag.Bool("log-debug", false, "Enable debug level logger")
+
 
 	flag.Parse()
 
-	logger.Initialize(*tabulaLogFile)
+    closeLogger := logger.Initialize(*tabulaLogFile, *logDebug)
 
 	if err := factory.Context(model.Option(*option), model.ProtoSQL{
 		Engine:          *engine,
@@ -33,6 +34,8 @@ func main() {
 		DestFolder:      *destFolder,
 		HeaderStyleLink: *headerStyleLink,
 	}); err != nil {
-		log.Fatal(err)
+		logger.Errorf("Error creating factory context %v", err)
 	}
+
+    closeLogger()
 }

@@ -12,16 +12,18 @@ import java.util.logging.SimpleFormatter;
 public class LoggerUtil {
     private static Logger logger;
     private static FileHandler fileHandler;
+    private static boolean logDebug;
 
     private static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
-    public static void initialize(String logFileName) {
+    public static void initialize(String logFileName, boolean logDebugEnabled) {
         try {
             Files.createDirectories(Paths.get(logFileName).getParent());
             fileHandler = new FileHandler(logFileName, true);
             fileHandler.setFormatter(new SimpleFormatter());
 
             logger = Logger.getLogger("logger");
+            logDebug = logDebugEnabled;
 
             logger.addHandler(fileHandler);
         } catch (IOException e) {
@@ -31,35 +33,34 @@ public class LoggerUtil {
     }
 
     public static void debug(String message) {
-        var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-        logger.info(String.format("[DEBUG] [%s] %s", timestamp, message));
-        close();
+        if (logDebug) {
+            var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
+            logger.info(String.format("[DEBUG] [%s] [JAVA] %s", timestamp, message));
+        }
     }
 
     public static void debugf(String format, Object... args) {
-        var finalFormat = "[DEBUG] [%s] " + format;
-        var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-        logger.info(String.format(finalFormat, timestamp, args));
-        close();
+        if (logDebug) {
+            var finalFormat = "[DEBUG] [%s] [JAVA] " + format;
+            var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
+            logger.info(String.format(finalFormat, timestamp, args));
+        }
     }
 
     public static void error(String message) {
         var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-        logger.severe(String.format("[ERROR] [%s] %s", timestamp, message));
-        close();
+        logger.severe(String.format("[ERROR] [%s] [JAVA] %s", timestamp, message));
     }
 
     public static void errorf(String format, Object... args) {
-        var finalFormat = "[ERROR] [%s] " + format;
+        var finalFormat = "[ERROR] [%s] [JAVA] " + format;
         var timestamp = new SimpleDateFormat(DATE_FORMAT).format(new Date());
         logger.severe(String.format(finalFormat, timestamp, args));
-        close();
     }
 
-    private static void close() {
+    public static void close() {
         if (fileHandler != null) {
             fileHandler.close();
         }
     }
 }
-

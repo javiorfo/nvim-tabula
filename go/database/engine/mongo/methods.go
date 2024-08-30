@@ -132,7 +132,7 @@ func countDocuments(ctx context.Context, mongoCommand *mongoCommand, db *mongo.D
 
 	total, err := db.Collection(mongoCommand.Collection).CountDocuments(ctx, *filter)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error counting collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -149,7 +149,7 @@ func insertOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Databa
     
     result, err := db.Collection(mongoCommand.Collection).InsertOne(ctx, *obj)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error inserting collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -166,7 +166,7 @@ func insertMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Datab
     
     result, err := db.Collection(mongoCommand.Collection).InsertMany(ctx, array)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error inserting collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -183,7 +183,7 @@ func deleteOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Databa
     
     result, err := db.Collection(mongoCommand.Collection).DeleteOne(ctx, *obj)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error deleting collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -200,7 +200,7 @@ func deleteMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Datab
     
     result, err := db.Collection(mongoCommand.Collection).DeleteMany(ctx, *obj)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error deleting collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -217,7 +217,7 @@ func updateOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Databa
     
     result, err := db.Collection(mongoCommand.Collection).UpdateOne(ctx, obj.First, obj.Second)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error updating collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -234,7 +234,7 @@ func updateMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Datab
     
     result, err := db.Collection(mongoCommand.Collection).UpdateMany(ctx, obj.First, obj.Second)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error updating collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}
@@ -245,7 +245,7 @@ func updateMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Datab
 func dropCollection(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
     err := db.Collection(mongoCommand.Collection).Drop(ctx)
 	if err != nil {
-		logger.Errorf("Error finding collection:", err)
+		logger.Errorf("Error dropping collection:", err)
 		fmt.Printf("[ERROR] %v", err)
 		return
 	}

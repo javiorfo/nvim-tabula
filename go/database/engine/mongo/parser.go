@@ -90,7 +90,7 @@ func getBsonParsed(s string) (*primitive.M, error) {
 	bsonObj := bson.M{}
 	if len(s) > 2 {
 		if err := json.Unmarshal([]byte(s), &bsonObj); err != nil {
-			return nil, fmt.Errorf("parsing filter %v", err)
+			return nil, fmt.Errorf("parsing bson %v", err)
 		}
 	}
 	return &bsonObj, nil
@@ -100,7 +100,7 @@ func getArrayParsed(s string) ([]any, error) {
 	var array []any
 	if len(s) > 2 {
 		if err := json.Unmarshal([]byte(s), &array); err != nil {
-			return nil, fmt.Errorf("parsing filter %v", err)
+			return nil, fmt.Errorf("parsing array %v", err)
 		}
 	}
 	return array, nil
@@ -123,12 +123,12 @@ func getTwoBsonParsed(s string) (*parsedBson, error) {
 
 	var first bson.M
 	if err := json.Unmarshal([]byte(filterStr), &first); err != nil {
-		return nil, fmt.Errorf("parsing first %v", err)
+		return nil, fmt.Errorf("parsing first bson %v", err)
 	}
 
 	var second bson.M
 	if err := json.Unmarshal([]byte(updateStr), &second); err != nil {
-		return nil, fmt.Errorf("parsing second %v", err)
+		return nil, fmt.Errorf("parsing second bson %v", err)
 	}
 
 	return &parsedBson{First: first, Second: second}, nil

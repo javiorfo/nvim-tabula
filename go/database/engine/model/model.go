@@ -64,9 +64,12 @@ func (p *ProtoSQL) Run() {
 	}
 	defer closer()
 
+    logger.Debugf("Query %s", p.Queries)
 	if query.IsSelectQuery(p.Queries) {
+        logger.Debug("is select...")
 		p.ExecuteSelect(db)
 	} else {
+        logger.Debug("is NOT select...")
 		p.execute(db)
 	}
 }
@@ -82,7 +85,7 @@ func (p *ProtoSQL) execute(db *sql.DB) {
 
 		rowsAffected, err := res.RowsAffected()
 		if err != nil {
-			logger.Errorf("Error executing query %v", err)
+			logger.Errorf("Error getting rows affected %v", err)
 			fmt.Printf("[ERROR] %v", err)
 			return
 		}
@@ -101,7 +104,7 @@ func (p *ProtoSQL) execute(db *sql.DB) {
 				results[i] = fmt.Sprintf("%d)   %v\n", i+1, err)
 			} else {
 				if rowsAffected, err := res.RowsAffected(); err != nil {
-					logger.Errorf("Error executing query %v", err)
+					logger.Errorf("Error getting rows affected %v", err)
 					results[i] = fmt.Sprintf("%d)   %v\n", i+1, err)
 				} else {
 					if query.IsInsertUpdateOrDelete(q) {
@@ -197,6 +200,7 @@ func (p *ProtoSQL) ExecuteSelect(db *sql.DB) {
 	}
 
 	if len(tabula.Rows) > 0 {
+        logger.Debug("Generating tabula table...")
 		tabula.Generate()
 	} else {
 		fmt.Print("  Query has returned 0 results.")
@@ -210,6 +214,8 @@ func (p *ProtoSQL) GetTables() {
 		return
 	}
 	defer closer()
+
+    logger.Debugf("Query to get tables: %s", p.Queries)
 
 	rows, err := db.Query(p.Queries)
 	if err != nil {
@@ -248,6 +254,8 @@ func (p *ProtoSQL) GetTableInfo() {
 	defer closer()
 
 	p.Queries = p.GetTableInfoQuery(p.Queries)
+    logger.Debugf("Query to get table info: %s", p.Queries)
+
 	p.ExecuteSelect(db)
 }
 

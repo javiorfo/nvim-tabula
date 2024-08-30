@@ -14,6 +14,7 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import tabula.database.query.QueryUtils;
 import tabula.database.table.Header;
 import tabula.database.table.Tabula;
@@ -21,6 +22,7 @@ import tabula.logger.LoggerUtil;
 
 @AllArgsConstructor
 @Getter
+@ToString
 public class ProtoSQL {
 
     private Engine engine;
@@ -86,8 +88,10 @@ public class ProtoSQL {
     public void run() {
         try (Connection connection = getConnection()) {
             if (QueryUtils.isSelectQuery(queries)) {
+                LoggerUtil.debug("is select...");
                 executeSelect(connection);
             } else {
+                LoggerUtil.debug("is NOT select...");
                 execute(connection);
             }
         } catch (SQLException e) {
@@ -130,6 +134,7 @@ public class ProtoSQL {
             }
 
             var filePath = Tabula.createTabulaFileFormat(destFolder);
+            LoggerUtil.debugf("File path: %s", filePath);
             System.out.println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg");
             System.out.println(filePath);
 
@@ -138,7 +143,9 @@ public class ProtoSQL {
     }
 
     public void executeSelect(Connection connection) {
-        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(queries)) {
+        LoggerUtil.debugf("Query to exexute in select %s", this.queries);
+
+        try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(this.queries)) {
             List<String> columns = new ArrayList<>();
             int columnCount = rs.getMetaData().getColumnCount();
 
@@ -171,6 +178,7 @@ public class ProtoSQL {
 
             if (!rows.isEmpty()) {
                 var tabula = new Tabula(destFolder, borderStyle, headerStyleLink, headers, rows);
+                LoggerUtil.debug("Generating tabula table");
                 tabula.generate();
             } else {
                 System.out.println("  Query has returned 0 results.");
@@ -183,6 +191,7 @@ public class ProtoSQL {
     public void getTables() {
         List<String> values = new ArrayList<>();
 
+        LoggerUtil.debugf("Query to get tables %s", this.queries);
         try (Connection connection = getConnection();
                 var stmt = connection.createStatement();
                 var rs = stmt.executeQuery(this.queries)) {

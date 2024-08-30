@@ -6,6 +6,7 @@ import (
 	"github.com/javiorfo/nvim-tabula/go/database/engine"
 	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
 	"github.com/javiorfo/nvim-tabula/go/database/engine/mongo"
+	"github.com/javiorfo/nvim-tabula/go/logger"
 )
 
 const MYSQL = "mysql"
@@ -21,6 +22,7 @@ type Executor interface {
 }
 
 func Context(option model.Option, proto model.ProtoSQL) error {
+    logger.Debugf("Option selected %d, engine %s", option, proto.Engine)
 	switch proto.Engine {
 	case POSTGRES:
 		return run(&engine.Postgres{ProtoSQL: proto}, option)

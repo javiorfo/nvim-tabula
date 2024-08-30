@@ -91,6 +91,7 @@ func (t Tabula) Generate() {
 	}
 
     filePath := CreateTabulaFileFormat(t.DestFolder)
+    logger.Debugf("File path: %s", filePath)
 	fmt.Println(highlighting(t.Headers, t.HeaderStyleLink))
     fmt.Println(filePath)
 
@@ -102,6 +103,7 @@ func highlighting(headers map[int]Header, style string) string {
 	for k, v := range headers {
 		result += fmt.Sprintf("syn match header%d '%s' | hi link header%d %s |", k, v.Name, k, style)
 	}
+    logger.Debugf("Highlight matches: %s", result)
 	return result
 }
 
