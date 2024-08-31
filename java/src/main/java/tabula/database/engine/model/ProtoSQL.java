@@ -168,7 +168,7 @@ public class ProtoSQL {
                         value = "NULL";
                     }
                     resultRow.add(" " + value);
-                    int valueLength = QueryUtils.unicodeLength(value) + 2;
+                    var valueLength = QueryUtils.unicodeLength(value) + 2;
                     if (headers.get(i).getLength() < valueLength) {
                         headers.put(i, new Header(headers.get(i).getName(), valueLength));
                     }
@@ -177,9 +177,8 @@ public class ProtoSQL {
             }
 
             if (!rows.isEmpty()) {
-                var tabula = new Tabula(destFolder, borderStyle, headerStyleLink, headers, rows);
-                LoggerUtil.debug("Generating tabula table");
-                tabula.generate();
+                LoggerUtil.debug("Generating tabula table...");
+                new Tabula(destFolder, borderStyle, headerStyleLink, headers, rows).generate();
             } else {
                 System.out.println("  Query has returned 0 results.");
             }

@@ -12,19 +12,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import tabula.database.query.QueryUtils;
 import tabula.logger.LoggerUtil;
 
-@AllArgsConstructor
-@Getter
-public class Tabula {
-    private String destFolder;
-    private int borderStyle;
-    private String headerStyleLink;
-    private Map<Integer, Header> headers;
-    private List<List<String>> rows;
+public record Tabula(String destFolder, int borderStyle, String headerStyleLink, Map<Integer, Header> headers,
+        List<List<String>> rows) {
 
     public void generate() {
         var b = Border.getBorder(this.borderStyle);

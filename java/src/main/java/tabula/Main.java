@@ -41,10 +41,10 @@ public class Main {
 
             DBFactory.context(op, proto);
 
-            LoggerUtil.close();
-
         } catch (ParseException e) {
             System.out.println("[ERROR] parsing command line arguments: " + e.getMessage());
+        } finally {
+            LoggerUtil.close();
         }
     }
 }
