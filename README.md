@@ -24,7 +24,7 @@
 
 ## Demo
 
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula.gif?raw=true" alt="nvim-tabula"/>
+<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-demo.gif?raw=true" alt="nvim-tabula"/>
 
 **NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
@@ -229,6 +229,8 @@ db.mycollection.find({ "field1": "value1" }).sort({"info": -1})
 mycollection.find({ "field1": "value1" }).sort({"info": -1})
 ```
 
+<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-mongo.gif?raw=true" alt="nvim-tabula"/>
+
 ---
 
 ## Usage
@@ -273,6 +275,8 @@ commands = {
 ### TabulaTableInfo
 - This command has an autocomplete menu showing all the tables of the selected database
 - If you press enter after a table was selected, a popup show the "selected table" info
+
+<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-tableinfo.gif?raw=true" alt="nvim-tabula"/>
 
 ---
 

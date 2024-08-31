@@ -222,7 +222,7 @@ func updateOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Databa
 		return
 	}
 
-	fmt.Printf("  Collection %s, document updated with ID: %v", mongoCommand.Collection, result.ModifiedCount)
+	fmt.Printf("  Collection %s, updated: %d document/s.", mongoCommand.Collection, result.ModifiedCount)
 }
 
 func updateMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
@@ -239,7 +239,7 @@ func updateMany(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Datab
 		return
 	}
 
-	fmt.Printf("  Collection %s, document updated with ID/s: %v", mongoCommand.Collection, result.ModifiedCount)
+	fmt.Printf("  Collection %s, updated: %d document/s.", mongoCommand.Collection, result.ModifiedCount)
 }
 
 func dropCollection(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database) {
