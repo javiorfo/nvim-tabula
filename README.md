@@ -37,7 +37,6 @@
 - [Usage](#usage)
 - [Commands](#commands)
 - [Logs](#logs)
-- [Integrations](#integrations)
 
 ---
 
@@ -231,6 +230,8 @@ mycollection.find({ "field1": "value1" }).sort({"info": -1})
 
 <img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-mongo.gif?raw=true" alt="nvim-tabula"/>
 
+**NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
+
 ---
 
 ## Usage
@@ -272,11 +273,15 @@ commands = {
 
 <img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-selectdb.gif?raw=true" alt="nvim-tabula"/>
 
+**NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
+
 ### TabulaTableInfo
 - This command has an autocomplete menu showing all the tables of the selected database
 - If you press enter after a table was selected, a popup show the "selected table" info
 
 <img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-tableinfo.gif?raw=true" alt="nvim-tabula"/>
+
+**NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
 ---
 
@@ -296,14 +301,13 @@ require'tabula'.setup {
 
 ---
 
-## Integrations
-- [ ] To getting tables [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim)
-
----
-
 ## Screenshots
+#### Example executing the entire script (not select allowed) semicolon-separated
+- Note that in the fourth statement there is a duplicated primary key error reported
+<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-multi.png?raw=true" alt="nvim-tabula"/>
 
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula.gif?raw=true" alt="nvim-tabula"/>
+#### Example example of border style 4 in table result
+<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-border.png?raw=true" alt="nvim-tabula"/>
 
 **NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
