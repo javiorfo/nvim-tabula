@@ -73,6 +73,7 @@ function M.run()
                 if result[2] then
                     vim.cmd(string.format("%dsp %s", setup.output.buffer_height, result[2]))
                     vim.cmd("setlocal nowrap")
+                    vim.cmd("setlocal noma")
                     util.logger:info(string.format("  Query executed correctly [%.2f secs]", elapsed_time))
                     vim.cmd(result[1]:gsub("?", "󰠵"))
                 else
