@@ -21,7 +21,7 @@
 | SQLite | :x: | Go | Future release |
 | IBM Informix | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
 
-**NOTE:** There is this [branch](https://github.com/javiorfo/nvim-tabula/tree/java) of this plugin which replace ODBC implementations by JDBC (requiring Java 21). 
+**NOTE:** There is a [branch](https://github.com/javiorfo/nvim-tabula/tree/java) of this plugin which replace ODBC implementations by JDBC (requiring Java 21). 
 
 ## Demo
 
