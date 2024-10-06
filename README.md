@@ -49,6 +49,7 @@
         'javiorfo/nvim-popcorn',
         'javiorfo/nvim-spinetta'
     },
+    branch = 'java',
     lazy = true,
     cmd = { "TabulaBuild" },
     ft = { "sql", "javascript" }, -- javascript if MongoDB is used
