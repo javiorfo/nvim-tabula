@@ -5,9 +5,7 @@ local default_posgres_port = "5432"
 local default_mongo_port = "27017"
 local default_mysql_port = "3306"
 local default_mssql_port = "1433"
-local default_informix_port = "1526"
 local go_executor = util.tabula_root_path .. "bin/tabula"
-local java_executor = string.format("java -jar %s%s", util.tabula_root_path, "bin/tabula.jar")
 
 return {
     db = {
@@ -72,17 +70,9 @@ return {
         },
         informix = {
             title = "Informix",
-            default_port = default_informix_port,
-            default_host = host,
-            executor = java_executor,
+            executor = go_executor,
             get_connection_string = function(connection)
-                return string.format("jdbc:informix-sqli://%s:%s/%s%s%s",
-                    connection.host or host,
-                    connection.port or default_informix_port,
-                    connection.dbname,
-                    connection.user and ":USER=" .. connection.user or "",
-                    connection.password and ";PASSWORD=" .. connection.password .. ";" or ""
-                )
+                return string.format("DSN=%s", connection.name)
             end
         },
     }

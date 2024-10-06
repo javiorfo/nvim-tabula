@@ -165,6 +165,11 @@ opts = {
                 user = "admin",
                 password = "admin",
             },
+            {
+                name = "InformixODBC",
+                engine = "informix",
+                dbname = "odbc"
+            },
         }
     }
 }

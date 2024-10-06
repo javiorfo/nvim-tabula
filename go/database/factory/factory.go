@@ -13,6 +13,7 @@ const MYSQL = "mysql"
 const MSSQL = "mssql"
 const POSTGRES = "postgres"
 const MONGO = "mongo"
+const INFORMIX = "informix"
 
 type Executor interface {
 	Run()
@@ -32,6 +33,9 @@ func Context(option model.Option, proto model.ProtoSQL) error {
 		return run(&engine.MySql{ProtoSQL: proto}, option)
 	case MSSQL:
 		return run(&engine.MSSql{ProtoSQL: proto}, option)
+	case INFORMIX:
+        proto.Engine = "odbc"
+		return run(&engine.Informix{ProtoSQL: proto}, option)
 	default:
 		return errors.New("engine does not exist: " + proto.Engine)
 	}

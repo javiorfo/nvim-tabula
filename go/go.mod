@@ -1,8 +1,9 @@
 module github.com/javiorfo/nvim-tabula/go
 
-go 1.23.0
+go 1.23.2
 
 require (
+	github.com/alexbrainman/odbc v0.0.0-20170616052051-0ee187a7ebce
 	github.com/denisenkom/go-mssqldb v0.12.3
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/lib/pq v1.10.9
@@ -22,5 +23,6 @@ require (
 	github.com/youmark/pkcs8 v0.0.0-20181117223130-1be2e3e5546d // indirect
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
+	golang.org/x/sys v0.26.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 )

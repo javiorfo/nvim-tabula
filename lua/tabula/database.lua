@@ -98,15 +98,23 @@ function M.show_info()
         local connection = db.connections[require 'tabula'.default_db]
         local db_const_data = engines.db[connection.engine]
         footer = { db_const_data.title, "String" }
-        content = {
-            { "󱘖 Connection Data", "Type" },
-            { "NAME     󰁕 " .. connection.name },
-            { "HOST     󰁕 " .. (connection.host or db_const_data.default_host) },
-            { "PORT     󰁕 " .. (connection.port or db_const_data.default_port) },
-            { "DB NAME  󰁕 " .. connection.dbname },
-            { "USER     󰁕 " .. (((connection.user and setup.view.show_user and connection.user) or connection.user and "********") or "-") },
-            { "PASSWORD 󰁕 " .. (((connection.password and setup.view.show_password and connection.password) or connection.password and "********") or "-") },
-        }
+        if connection.dbname == "odbc" then
+            content = {
+                { "󱘖 Connection Data", "Type" },
+                { "DSN      󰁕 " .. connection.name },
+                { "CON TYPE 󰁕 " .. connection.dbname },
+            }
+        else
+            content = {
+                { "󱘖 Connection Data", "Type" },
+                { "NAME     󰁕 " .. connection.name },
+                { "HOST     󰁕 " .. (connection.host or db_const_data.default_host) },
+                { "PORT     󰁕 " .. (connection.port or db_const_data.default_port) },
+                { "DB NAME  󰁕 " .. connection.dbname },
+                { "USER     󰁕 " .. (((connection.user and setup.view.show_user and connection.user) or connection.user and "********") or "-") },
+                { "PASSWORD 󰁕 " .. (((connection.password and setup.view.show_password and connection.password) or connection.password and "********") or "-") },
+            }
+        end
     end
 
     if #content == 0 then
