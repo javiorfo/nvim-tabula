@@ -3,14 +3,13 @@
 
 ## Caveats
 - These dependencies are required to be installed: `Go`. 
-- Java is not required. Only if you want to use databases which require Java, in that case `Java 21 or newer` and `Maven` are required.
 - For the sake of simplicity, **this plugin is STATELESS**. It does not use database sessions or keep states after Neovim is closed.
 - This plugin has been developed on and for `Linux` following open source philosophy.
 
 ## Supported Databases
 #### Databases not marked will be supported in the future
 
-| Database | Supported | Language required | NOTE |
+| Database | Supported | Integrated by | NOTE |
 | ------- | ------------- | ------ | ---- |
 | MongoDB | :heavy_check_mark: | Go | Supported operations detailed [here](#nosql) |
 | MySQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
@@ -20,7 +19,9 @@
 | Oracle | :x: | Go | Future release |
 | Redis | :x: | Go | Future release |
 | SQLite | :x: | Go | Future release |
-| IBM Informix | :heavy_check_mark: | Java | Supported operations detailed [here](#sql) |
+| IBM Informix | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
+
+**NOTE:** There is this [branch](https://github.com/javiorfo/nvim-tabula/tree/java) of this plugin which replace ODBC implementations by JDBC (requiring Java 21). 
 
 ## Demo
 
@@ -165,8 +166,11 @@ opts = {
                 user = "admin",
                 password = "admin",
             },
+            -- Informix needs ODBC connection configured (check unix ODBC docs for this)
+            -- 'name' must match your DSN
+            -- 'dbname' must be "odbc"
             {
-                name = "InformixODBC",
+                name = "InformixODBC", 
                 engine = "informix",
                 dbname = "odbc"
             },
