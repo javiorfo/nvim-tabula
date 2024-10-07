@@ -43,6 +43,10 @@ local function get_buffer_content()
 end
 
 function M.run()
+    if setup.output.override then
+        M.close()
+    end
+
     local queries = get_buffer_content()
     local conn = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db]) or nil
 

@@ -17,6 +17,7 @@ M.SETTINGS = {
         border_style = 1,
         header_style_link = "Type",
         buffer_height = 20,
+        override = false
     },
     db = {
         default = 1,
@@ -81,6 +82,10 @@ function M.setup(opts)
             M.SETTINGS.output.buffer_height = (type(op.buffer_height) == "number" and op.buffer_height > 10 and op.buffer_height < 90 and op.buffer_height) or
                 M.SETTINGS.output.buffer_height
         end
+        if op.override ~= nil then
+            M.SETTINGS.output.override = (type(op.override) == "boolean" and op.override) or
+                M.SETTINGS.output.override
+        end
     end
     if opts.db then
         local db = opts.db
@@ -105,7 +110,7 @@ function M.setup(opts)
             M.SETTINGS.db.connections = (type(db.connections) == "table" and #db.connections > 0 and type(db.connections[1]) == "table" and db.connections)
         end
     end
-    if opts.internal then
+    if opts.internal ~= nil then
         local int = opts.internal
         M.SETTINGS.internal.log_debug = (type(int.log_debug) == "boolean" and int.log_debug) or
             M.SETTINGS.internal.log_debug

@@ -99,6 +99,10 @@
 
             -- Height of the buffer table result
             buffer_height = 20,
+
+            -- Override the results buffer
+            -- If false every query opens in a different buffer
+            override = false,
         },
 
         -- Configuration of databases (host, port, credentials, etc)
