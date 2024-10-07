@@ -14,6 +14,7 @@ const MSSQL = "mssql"
 const POSTGRES = "postgres"
 const MONGO = "mongo"
 const INFORMIX = "informix"
+const DB2 = "db2"
 
 type Executor interface {
 	Run()
@@ -36,6 +37,9 @@ func Context(option model.Option, proto model.ProtoSQL) error {
 	case INFORMIX:
         proto.Engine = "odbc"
 		return run(&engine.Informix{ProtoSQL: proto}, option)
+	case DB2:
+        proto.Engine = "odbc"
+		return run(&engine.Db2{ProtoSQL: proto}, option)
 	default:
 		return errors.New("engine does not exist: " + proto.Engine)
 	}
@@ -49,8 +53,7 @@ func run(executor Executor, option model.Option) error {
 	case model.TABLES:
 		executor.GetTables()
 		return nil
-	case model.TABLE_INFO:
-		executor.GetTableInfo()
+	case model.TABLE_INFO: executor.GetTableInfo()
 		return nil
 	case model.PING:
 		executor.Ping()

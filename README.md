@@ -15,11 +15,12 @@
 | MySQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
 | MS-SQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
 | PostgreSQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
+| IBM Informix | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
+| IBM DB2 | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
 | Neo4j | :x: | Go | Future release |
 | Oracle | :x: | Go | Future release |
 | Redis | :x: | Go | Future release |
 | SQLite | :x: | Go | Future release |
-| IBM Informix | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
 
 **NOTE:** There is a [branch](https://github.com/javiorfo/nvim-tabula/tree/java) of this plugin which replace ODBC implementations by JDBC (requiring Java 21). 
 
@@ -166,12 +167,20 @@ opts = {
                 user = "admin",
                 password = "admin",
             },
-            -- Informix needs ODBC connection configured (check unix ODBC docs for this)
+            -- IBM Informix needs ODBC connection configured (check unix ODBC docs for this)
             -- 'name' must match your DSN
             -- 'dbname' must be "odbc"
             {
-                name = "InformixODBC", 
+                name = "Informix_ODBC", 
                 engine = "informix",
+                dbname = "odbc"
+            },
+            -- IBM DB2 needs ODBC connection configured (check unix ODBC docs for this)
+            -- 'name' must match your DSN
+            -- 'dbname' must be "odbc"
+            {
+                name = "DB2_ODBC", 
+                engine = "db2",
                 dbname = "odbc"
             },
         }

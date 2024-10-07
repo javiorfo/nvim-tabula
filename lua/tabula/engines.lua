@@ -75,5 +75,12 @@ return {
                 return string.format("DSN=%s", connection.name)
             end
         },
+        db2 = {
+            title = "db2",
+            executor = go_executor,
+            get_connection_string = function(connection)
+                return string.format("DSN=%s", connection.name)
+            end
+        },
     }
 }
