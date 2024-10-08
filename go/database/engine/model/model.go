@@ -51,6 +51,7 @@ func (p *ProtoSQL) Ping() {
     err = db.Ping()
     if err != nil {
 		fmt.Printf("[ERROR] %v", err)
+        return
     }
 
     fmt.Println("Successfully connected to the database!")

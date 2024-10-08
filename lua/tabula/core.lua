@@ -43,6 +43,7 @@ local function get_buffer_content()
 end
 
 function M.run()
+    local file_with_extension = vim.fn.expand("%:p")
     if setup.output.override then
         M.close()
     end
@@ -114,6 +115,8 @@ function M.run()
     end
 
     spinner:start(job_to_run(script))
+
+    vim.cmd(vim.fn.bufwinnr(file_with_extension) .. " wincmd w")
 end
 
 function M.build()

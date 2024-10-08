@@ -2,7 +2,7 @@
 *Minimal Multi database client for Neovim*
 
 ## Caveats
-- These dependencies are required to be installed: `Go`. 
+- These dependencies are required to be installed: `Go`, `unixodbc`. 
 - For the sake of simplicity, **this plugin is STATELESS**. It does not use database sessions or keep states after Neovim is closed.
 - This plugin has been developed on and for `Linux` following open source philosophy.
 
