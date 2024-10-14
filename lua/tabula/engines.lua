@@ -5,6 +5,7 @@ local default_posgres_port = "5432"
 local default_mongo_port = "27017"
 local default_mysql_port = "3306"
 local default_mssql_port = "1433"
+local default_oracle_port = "1521"
 local go_executor = util.tabula_root_path .. "bin/tabula"
 
 return {
@@ -64,6 +65,21 @@ return {
                     connection.password and ":" .. connection.password .. "@" or "",
                     connection.host or host,
                     connection.port or default_mssql_port,
+                    connection.dbname
+                )
+            end
+        },
+        oracle = {
+            title = "Oracle",
+            default_port = default_oracle_port,
+            default_host = host,
+            executor = go_executor,
+            get_connection_string = function(connection)
+                return string.format("%s%s%s:%s/%s",
+                    connection.user and connection.user or "",
+                    connection.password and ":" .. connection.password .. "@" or "",
+                    connection.host or host,
+                    connection.port or default_oracle_port,
                     connection.dbname
                 )
             end

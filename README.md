@@ -11,14 +11,15 @@
 
 | Database | Supported | Integrated by | NOTE |
 | ------- | ------------- | ------ | ---- |
-| MongoDB | :heavy_check_mark: | Go | Supported operations detailed [here](#nosql) |
-| MySQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
-| MS-SQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
-| PostgreSQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
-| IBM Informix | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
 | IBM DB2 | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
+| IBM Informix | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
+| MariaDB | :x: | Go | Future release |
+| MongoDB | :heavy_check_mark: | Go | Supported operations detailed [here](#nosql) |
+| MS-SQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
+| MySQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
 | Neo4j | :x: | Go | Future release |
-| Oracle | :x: | Go | Future release |
+| Oracle | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
+| PostgreSQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
 | Redis | :x: | Go | Future release |
 | SQLite | :x: | Go | Future release |
 
@@ -130,7 +131,7 @@
 #### Configure DB connections and credentials
 - In the `setup` show above there is a section left out to be configured by the user (**connections** inside **db** table).
 - Here are some examples of different DB configurations
-- Engines possible values are: "mongo", "postgres", "mysql", "mssql" and "informix".
+- Engines possible values are: "db2", "mongo", "postgres", "oracle", "mysql", "mssql" and "informix".
 `Lazy`
 ```lua
 opts = {
@@ -155,6 +156,13 @@ opts = {
             {
                 name = "PostgreSQL example",
                 engine = "postgres",
+                dbname = "db_dummy",
+                user = "admin",
+                password = "admin",
+            },
+            {
+                name = "Oracle example",
+                engine = "oracle",
                 dbname = "db_dummy",
                 user = "admin",
                 password = "admin",

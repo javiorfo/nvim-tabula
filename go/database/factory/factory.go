@@ -9,12 +9,13 @@ import (
 	"github.com/javiorfo/nvim-tabula/go/logger"
 )
 
+const DB2 = "db2"
+const INFORMIX = "informix"
+const MONGO = "mongo"
 const MYSQL = "mysql"
 const MSSQL = "mssql"
+const ORACLE = ""
 const POSTGRES = "postgres"
-const MONGO = "mongo"
-const INFORMIX = "informix"
-const DB2 = "db2"
 
 type Executor interface {
 	Run()
@@ -34,6 +35,9 @@ func Context(option model.Option, proto model.ProtoSQL) error {
 		return run(&engine.MySql{ProtoSQL: proto}, option)
 	case MSSQL:
 		return run(&engine.MSSql{ProtoSQL: proto}, option)
+	case ORACLE:
+        proto.Engine = "ora"
+		return run(&engine.Oracle{ProtoSQL: proto}, option)
 	case INFORMIX:
         proto.Engine = "odbc"
 		return run(&engine.Informix{ProtoSQL: proto}, option)

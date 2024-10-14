@@ -80,7 +80,6 @@ function M.run()
                     vim.cmd("setlocal nowrap")
                     vim.cmd("setlocal noma")
                     util.logger:info(string.format("  Query executed correctly [%.2f secs]", elapsed_time))
-                    vim.cmd(result[1]:gsub("?", "󰠵"))
                 else
                     util.logger:info(result[1])
                 end
