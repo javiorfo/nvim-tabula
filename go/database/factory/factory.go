@@ -14,7 +14,7 @@ const INFORMIX = "informix"
 const MONGO = "mongo"
 const MYSQL = "mysql"
 const MSSQL = "mssql"
-const ORACLE = ""
+const ORACLE = "oracle"
 const POSTGRES = "postgres"
 
 type Executor interface {
