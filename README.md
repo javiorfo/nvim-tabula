@@ -13,7 +13,7 @@
 | ------- | ------------- | ------ | ---- |
 | IBM DB2 | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
 | IBM Informix | :heavy_check_mark: | ODBC | Supported operations detailed [here](#sql) |
-| MariaDB | :x: | Go | Future release |
+| MariaDB | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
 | MongoDB | :heavy_check_mark: | Go | Supported operations detailed [here](#nosql) |
 | MS-SQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
 | MySQL | :heavy_check_mark: | Go | Supported operations detailed [here](#sql) |
@@ -174,26 +174,22 @@ opts = {
             },
             {
                 name = "MySQL something",
-                engine = "mysql",
+                engine = "mysql", -- "mysql" also works for MariaDB 
                 dbname = "db_dummy",
                 user = "admin",
                 password = "admin",
             },
             -- IBM Informix needs ODBC connection configured (check unix ODBC docs for this)
-            -- 'name' must match your DSN
-            -- 'dbname' must be "odbc"
             {
-                name = "Informix_ODBC", 
+                name = "Informix_ODBC", -- 'name' must match your DSN
                 engine = "informix",
-                dbname = "odbc"
+                dbname = "odbc" -- 'dbname' must be "odbc"
             },
             -- IBM DB2 needs ODBC connection configured (check unix ODBC docs for this)
-            -- 'name' must match your DSN
-            -- 'dbname' must be "odbc"
             {
-                name = "DB2_ODBC", 
+                name = "DB2_ODBC", -- 'name' must match your DSN
                 engine = "db2",
-                dbname = "odbc"
+                dbname = "odbc" -- 'dbname' must be "odbc"
             },
         }
     }
