@@ -8,18 +8,18 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/javiorfo/nvim-tabula/go/database/table/border"
-	"github.com/javiorfo/nvim-tabula/go/logger"
+	"github.com/javiorfo/nvim-dbeer/go/database/table/border"
+	"github.com/javiorfo/nvim-dbeer/go/logger"
 )
 
-const tabula_extension = "tabula"
+const dbeer_extension = "dbeer"
 
 type Header struct {
 	Name   string
 	Length int
 }
 
-type Tabula struct {
+type DBeer struct {
 	DestFolder      string
 	HeaderStyleLink string
 	BorderStyle     int
@@ -27,7 +27,7 @@ type Tabula struct {
 	Rows            [][]string
 }
 
-func (t Tabula) Generate() {
+func (t DBeer) Generate() {
 	b := border.GetBorder(border.BorderOption(t.BorderStyle))
 
 	headerUp := b.CornerUpLeft
@@ -90,7 +90,7 @@ func (t Tabula) Generate() {
 		table = append(table, value+"\n", line+"\n")
 	}
 
-    filePath := CreateTabulaFileFormat(t.DestFolder)
+    filePath := CreateDBeerFileFormat(t.DestFolder)
     logger.Debugf("File path: %s", filePath)
 	fmt.Println(highlighting(t.Headers, t.HeaderStyleLink))
     fmt.Println(filePath)
@@ -146,10 +146,10 @@ func WriteToFile(filePath string, values ...string) {
 	}
 }
 
-func CreateTabulaFileFormat(destFolder string) string {
-    return fmt.Sprintf("%s/%s.%s", destFolder, time.Now().Format("20060102-150405"), tabula_extension)
+func CreateDBeerFileFormat(destFolder string) string {
+    return fmt.Sprintf("%s/%s.%s", destFolder, time.Now().Format("20060102-150405"), dbeer_extension)
 }
 
-func CreateTabulaMongoFileFormat(destFolder string) string {
-    return fmt.Sprintf("%s/%s.%s.%s", destFolder, time.Now().Format("20060102-150405"), tabula_extension, "json")
+func CreateDBeerMongoFileFormat(destFolder string) string {
+    return fmt.Sprintf("%s/%s.%s.%s", destFolder, time.Now().Format("20060102-150405"), dbeer_extension, "json")
 }

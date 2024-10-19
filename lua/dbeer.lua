@@ -1,10 +1,11 @@
 local M = {}
-local util = require 'tabula.util'
-local engines = require 'tabula.engines'
+local util = require 'dbeer.util'
+local engines = require 'dbeer.engines'
 
 M.SETTINGS = {
     commands = {
-        select_db = '<C-space>',
+        select_db = '<CR>',
+        expand_db = '<C-space>',
         execute = '<C-t>',
         close = '<C-c>',
     },
@@ -43,6 +44,10 @@ function M.setup(opts)
         if commands.select_db then
             M.SETTINGS.commands.select_db = (type(commands.select_db) == "string" and commands.select_db) or
                 M.SETTINGS.commands.select_db
+        end
+        if commands.expand_db then
+            M.SETTINGS.commands.expand_db = (type(commands.expand_db) == "string" and commands.expand_db) or
+                M.SETTINGS.commands.expand_db
         end
         if commands.execute then
             M.SETTINGS.commands.execute = (type(commands.execute) == "string" and commands.execute) or

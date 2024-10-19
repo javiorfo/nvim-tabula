@@ -1,4 +1,4 @@
-local util = require 'tabula.util'
+local util = require 'dbeer.util'
 
 local host = "127.0.0.1"
 local default_posgres_port = "5432"
@@ -6,7 +6,7 @@ local default_mongo_port = "27017"
 local default_mysql_port = "3306"
 local default_mssql_port = "1433"
 local default_oracle_port = "1521"
-local go_executor = util.tabula_root_path .. "bin/tabula"
+local go_executor = util.dbeer_root_path .. "bin/dbeer"
 
 return {
     db = {

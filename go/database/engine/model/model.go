@@ -6,9 +6,9 @@ import (
 	"strings"
 	"unicode/utf8"
 
-	"github.com/javiorfo/nvim-tabula/go/database/query"
-	"github.com/javiorfo/nvim-tabula/go/database/table"
-	"github.com/javiorfo/nvim-tabula/go/logger"
+	"github.com/javiorfo/nvim-dbeer/go/database/query"
+	"github.com/javiorfo/nvim-dbeer/go/database/table"
+	"github.com/javiorfo/nvim-dbeer/go/logger"
 )
 
 type ProtoSQL struct {
@@ -116,8 +116,8 @@ func (p *ProtoSQL) execute(db *sql.DB) {
 				}
 			}
 		}
-		filePath := table.CreateTabulaFileFormat(p.DestFolder)
-		fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
+		filePath := table.CreateDBeerFileFormat(p.DestFolder)
+		fmt.Println("syn match dbeerStmtErr ' ' | hi link dbeerStmtErr ErrorMsg")
 		fmt.Println(filePath)
 
 		table.WriteToFile(filePath, results...)
@@ -141,7 +141,7 @@ func (p *ProtoSQL) ExecuteSelect(db *sql.DB) {
 	}
 	lenColumns := len(columns)
 
-	tabula := table.Tabula{
+	dbeer := table.DBeer{
 		DestFolder:      p.DestFolder,
 		BorderStyle:     p.BorderStyle,
 		HeaderStyleLink: p.HeaderStyleLink,
@@ -151,7 +151,7 @@ func (p *ProtoSQL) ExecuteSelect(db *sql.DB) {
 
 	for i, value := range columns {
 		name := " 󰠵 " + strings.ToUpper(value)
-		tabula.Headers[i+1] = table.Header{
+		dbeer.Headers[i+1] = table.Header{
 			Name:   name,
 			Length: utf8.RuneCountInString(name) + 1,
 		}
@@ -190,19 +190,19 @@ func (p *ProtoSQL) ExecuteSelect(db *sql.DB) {
 			results[i] = " " + value
 			index := i + 1
 
-			if tabula.Headers[index].Length < valueLength {
-				tabula.Headers[index] = table.Header{
-					Name:   tabula.Headers[index].Name,
+			if dbeer.Headers[index].Length < valueLength {
+				dbeer.Headers[index] = table.Header{
+					Name:   dbeer.Headers[index].Name,
 					Length: valueLength,
 				}
 			}
 		}
-		tabula.Rows = append(tabula.Rows, results)
+		dbeer.Rows = append(dbeer.Rows, results)
 	}
 
-	if len(tabula.Rows) > 0 {
-        logger.Debug("Generating tabula table...")
-		tabula.Generate()
+	if len(dbeer.Rows) > 0 {
+        logger.Debug("Generating dbeer table...")
+		dbeer.Generate()
 	} else {
 		fmt.Print("  Query has returned 0 results.")
 	}
@@ -234,7 +234,7 @@ func (p *ProtoSQL) GetTables() {
 			fmt.Printf("[ERROR] %v", err)
 			return
 		}
-		values = append(values, table)
+		values = append(values, strings.ToUpper(table))
 	}
 
 	if err := rows.Err(); err != nil {

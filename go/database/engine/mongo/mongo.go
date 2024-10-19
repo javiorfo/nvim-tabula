@@ -8,9 +8,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
-	"github.com/javiorfo/nvim-tabula/go/database/table"
-	"github.com/javiorfo/nvim-tabula/go/logger"
+	"github.com/javiorfo/nvim-dbeer/go/database/engine/model"
+	"github.com/javiorfo/nvim-dbeer/go/database/table"
+	"github.com/javiorfo/nvim-dbeer/go/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -165,7 +165,7 @@ func (m *Mongo) GetTableInfo() {
 		return
 	}
 
-	tabula := table.Tabula{
+	dbeer := table.DBeer{
 		DestFolder:      m.DestFolder,
 		BorderStyle:     m.BorderStyle,
 		HeaderStyleLink: m.HeaderStyleLink,
@@ -180,24 +180,24 @@ func (m *Mongo) GetTableInfo() {
 	for key, value := range maxKeysDoc {
 		valueKey := " " + strings.ToUpper(key)
 		valueType := " " + reflect.TypeOf(value).String()
-		tabula.Rows[index] = []string{valueKey, valueType}
+		dbeer.Rows[index] = []string{valueKey, valueType}
 
 		valueKeyLength := utf8.RuneCountInString(valueKey) + 2
-		if tabula.Headers[1].Length < valueKeyLength {
-			tabula.Headers[1] = table.Header{
-				Name:   tabula.Headers[1].Name,
+		if dbeer.Headers[1].Length < valueKeyLength {
+			dbeer.Headers[1] = table.Header{
+				Name:   dbeer.Headers[1].Name,
 				Length: valueKeyLength,
 			}
 		}
 		valueTypeLength := utf8.RuneCountInString(valueType) + 2
-		if tabula.Headers[2].Length < valueTypeLength {
-			tabula.Headers[2] = table.Header{
-				Name:   tabula.Headers[2].Name,
+		if dbeer.Headers[2].Length < valueTypeLength {
+			dbeer.Headers[2] = table.Header{
+				Name:   dbeer.Headers[2].Name,
 				Length: valueTypeLength,
 			}
 		}
 		index++
 	}
 
-	tabula.Generate()
+	dbeer.Generate()
 }

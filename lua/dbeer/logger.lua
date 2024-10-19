@@ -2,7 +2,7 @@ local M = {}
 
 local function logger(msg)
     return function(level)
-        msg = string.format("  Tabula   %s", msg)
+        msg = string.format("  DBeer   %s", msg)
         vim.notify(msg, level)
     end
 end
@@ -27,9 +27,9 @@ function M:info(msg)
 end
 
 function M:debug(msg)
-    local util = require 'tabula.util'
-    if require'tabula'.SETTINGS.internal.log_debug then
-        local file = io.open(util.tabula_log_file, "a")
+    local util = require 'dbeer.util'
+    if require'dbeer'.SETTINGS.internal.log_debug then
+        local file = io.open(util.dbeer_log_file, "a")
         if file then
             file:write(string.format("%s %s\n", util.debug_header, msg))
             file:close()

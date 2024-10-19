@@ -1,8 +1,8 @@
-# nvim-tabula
+# nvim-dbeer
 *Minimal Multi database client for Neovim*
 
 ## Caveats
-- These dependencies are required to be installed: `Go`, `unixodbc`. 
+- These dependencies are required to be installed: `Go v1.23.2`, `unixodbc`. 
 - For the sake of simplicity, **this plugin is STATELESS**. It does not use database sessions or keep states after Neovim is closed.
 - This plugin has been developed on and for `Linux` following open source philosophy.
 
@@ -23,11 +23,10 @@
 | Redis | :x: | Go | Future release |
 | SQLite | :x: | Go | Future release |
 
-**NOTE:** There is a [branch](https://github.com/javiorfo/nvim-tabula/tree/java) of this plugin which replace ODBC implementations by JDBC (requiring Java 21). 
 
 ## Demo
 
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-demo.gif?raw=true" alt="nvim-tabula"/>
+<img src="https://github.com/javiorfo/img/blob/master/nvim-dbeer/dbeer-demo.gif?raw=true" alt="nvim-dbeer"/>
 
 **NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
@@ -47,17 +46,19 @@
 `Lazy`
 ```lua
 { 
-    'javiorfo/nvim-tabula',
+    'javiorfo/nvim-dbeer',
     dependencies = {
         'javiorfo/nvim-popcorn',
-        'javiorfo/nvim-spinetta'
+        'javiorfo/nvim-spinetta',
+        'nvim-telescope/telescope.nvim',
+        'nvim-lua/plenary.nvim',
     },
     lazy = true,
-    cmd = { "TabulaBuild" },
+    cmd = { "DBeerBuild" },
     ft = { "sql", "javascript" }, -- javascript if MongoDB is used
     build = function()
         -- Update the backend in every plugin change
-        require'tabula.core'.build()
+        require'dbeer.core'.build()
     end,
     opts = {
         -- This section is not required
@@ -65,8 +66,11 @@
       
         -- Default keymaps
         commands = {
-            -- Keymap in Normal mode to change DB with command :TabulaSelectDB
-            select_db = '<C-space>',
+            -- Keymap in Normal mode to select DB with command :DBeerDB
+            select_db = '<CR>',
+        
+            -- Keymap in Normal mode to expand and show connection data from DB with command :DBeerDB
+            expand_db = '<C-space>',
             
             -- Keymap in Normal and Visual mode to execute a query
             execute = '<C-t>',
@@ -75,7 +79,7 @@
             close = '<C-c>',
         },
 
-        -- Command :TabulaShowDB
+        -- Command :DBeerDB
         view = {
             -- Show the user name
             show_user = true,
@@ -86,7 +90,7 @@
 
         -- Output buffer
         output = {
-            -- Default dest folder where .tabula files are created
+            -- Default dest folder where .dbeer files are created
             -- The results will be erased after closing the buffer
             -- If you want to keep the query results, change this to a personal folder
             dest_folder = "/tmp",
@@ -250,75 +254,55 @@ opts = {
 ```javascript
 db.mycollection.find({ "field1": "value1" }).sort({"info": -1})
 
-// "db." is optional in nvim-tabula. This will work too
+// "db." is optional in nvim-dbeer. This will work too
 mycollection.find({ "field1": "value1" }).sort({"info": -1})
 ```
 
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-mongo.gif?raw=true" alt="nvim-tabula"/>
+<img src="https://github.com/javiorfo/img/blob/master/nvim-dbeer/dbeer-mongo.gif?raw=true" alt="nvim-dbeer"/>
 
 **NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
 ---
 
 ## Usage
-- When a **sql file** or **js file** (in case of Mongo) is opened, Neovim will print what connection is set by default in nvim-tabula. The connection to the database is done when the query is executed (open connection, execute statement, close connection), no session is set.
+- When a **sql file** or **js file** (in case of Mongo) is opened, Neovim will print what connection is set by default in nvim-dbeer. The connection to the database is done when the query is executed (open connection, execute statement, close connection), no session is set.
 - The keymap `<C-t>` (could be modified by the user, see config above) if executed in **NORMAL mode** will take all the script (semicolon-separated) to process. But maybe it's best to execute it in **VISUAL mode** getting the same experience of a stardard DB IDE where a query can be selected and execute it in isolation instead of the entire script.
 
 ---
 
 ## Commands
-### TabulaBuild
-- This is executed when this plugin receives and update, not necessary to be executed manually except if nvim-tabula informs it.
+### DBeerBuild
+- This is executed when this plugin receives and update, not necessary to be executed manually except if nvim-dbeer informs it.
 
-### TabulaClose
-- Command to close all opened **.tabula**. Not necessary to execute it manually. It's called by this command:
-```lua
-commands = {
-    -- Keymap in Normal mode to close all buffer results
-    close = '<C-c>',
-},
-```
-
-### TabulaDBInfo
--- Show a popup with the DB info (name, engine, host, port, credentials)
-
-### TabulaLogs
+### DBeerLogs
 - Show the logs
 
-### TabulaRun
-- Command to execute queries. Not necessary to execute it manually. It's called by this command:
-```lua
-commands = {
-    -- Keymap in Normal and Visual mode to execute a query
-    execute = '<C-t>',
-},
-```
+### DBeerDB
+- Command to change the DB connection to another one.
+- Show a expanded info of the DB (name, engine, host, port, credentials)
 
-### TabulaSelectDB
-- Command to change the DB connection to another.
-
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-selectdb.gif?raw=true" alt="nvim-tabula"/>
+<img src="https://github.com/javiorfo/img/blob/master/nvim-dbeer/dbeer-selectdb.gif?raw=true" alt="nvim-dbeer"/>
 
 **NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
-### TabulaTableInfo
-- This command has an autocomplete menu showing all the tables of the selected database
+### DBeerTables
+- This command uses telescope.nvim showing all the tables of the selected database
 - If you press enter after a table was selected, a popup show the "selected table" info
 
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-tableinfo.gif?raw=true" alt="nvim-tabula"/>
+<img src="https://github.com/javiorfo/img/blob/master/nvim-dbeer/dbeer-tableinfo.gif?raw=true" alt="nvim-dbeer"/>
 
 **NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
 ---
 
 ## Logs
-Logs are saved generally in this path: **/home/your_user/.local/state/nvim/tabula.log**
+Logs are saved generally in this path: **/home/your_user/.local/state/nvim/dbeer.log**
 
-- To check the logs execute the command `:TabulaLogs`
+- To check the logs execute the command `:dbeerLogs`
 
 **NOTE**: Only error logs are saved. If you want to enable debug phase, enable this on setup configuration:
 ```lua
-require'tabula'.setup {
+require'dbeer'.setup {
     internal = {
        log_debug = true 
    }
@@ -330,10 +314,10 @@ require'tabula'.setup {
 ## Screenshots
 #### Example executing the entire script (not select allowed) semicolon-separated
 - Note that in the fourth statement there is a duplicated primary key error reported
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-multi.png?raw=true" alt="nvim-tabula"/>
+<img src="https://github.com/javiorfo/img/blob/master/nvim-dbeer/dbeer-multi.png?raw=true" alt="nvim-dbeer"/>
 
 #### Example example of border style 4 in table result
-<img src="https://github.com/javiorfo/img/blob/master/nvim-tabula/tabula-border.png?raw=true" alt="nvim-tabula"/>
+<img src="https://github.com/javiorfo/img/blob/master/nvim-dbeer/dbeer-border.png?raw=true" alt="nvim-dbeer"/>
 
 **NOTE:** The colorscheme **nox** from [nvim-nyctophilia](https://github.com/javiorfo/nvim-nyctophilia) is used in this image.
 
@@ -341,3 +325,4 @@ require'tabula'.setup {
 
 ### Donate
 - **Bitcoin** [(QR)](https://raw.githubusercontent.com/javiorfo/img/master/crypto/bitcoin.png)  `1GqdJ63RDPE4eJKujHi166FAyigvHu5R7v`
+- [Paypal](https://www.paypal.com/donate/?hosted_button_id=FA7SGLSCT2H8G)

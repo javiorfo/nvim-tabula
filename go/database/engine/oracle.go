@@ -4,7 +4,7 @@ import (
 	"fmt"
 
     _ "github.com/sijms/go-ora/v2"
-	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
+	"github.com/javiorfo/nvim-dbeer/go/database/engine/model"
 )
 
 type Oracle struct {

@@ -1,13 +1,13 @@
-local logger = require 'tabula.logger'
+local logger = require 'dbeer.logger'
 
 local M = {}
 
 M.logger = logger:new()
-M.tabula_log_file = vim.fn.stdpath('log') .. "/tabula.log"
+M.dbeer_log_file = vim.fn.stdpath('log') .. "/dbeer.log"
 M.debug_header = string.format("[DEBUG][%s]:", os.date("%m/%d/%Y %H:%M:%S"))
-M.lua_tabula_path = debug.getinfo(1).source:match("@?(.*/)")
-M.lua_tabula_path = debug.getinfo(1).source:match("@?(.*/)")
-M.tabula_root_path = M.lua_tabula_path:gsub("/lua/tabula", "")
+M.lua_dbeer_path = debug.getinfo(1).source:match("@?(.*/)")
+M.lua_dbeer_path = debug.getinfo(1).source:match("@?(.*/)")
+M.dbeer_root_path = M.lua_dbeer_path:gsub("/lua/dbeer", "")
 
 function M.disable_editing_popup()
     -- Disable editing

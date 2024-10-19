@@ -1,7 +1,7 @@
 package engine
 
 import (
-	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
+	"github.com/javiorfo/nvim-dbeer/go/database/engine/model"
 	_ "github.com/lib/pq"
 )
 

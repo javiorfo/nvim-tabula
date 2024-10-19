@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/javiorfo/nvim-tabula/go/database/table"
-	"github.com/javiorfo/nvim-tabula/go/logger"
+	"github.com/javiorfo/nvim-dbeer/go/database/table"
+	"github.com/javiorfo/nvim-dbeer/go/logger"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -83,8 +83,8 @@ func find(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database, d
 		return
 	}
 
-	filePath := table.CreateTabulaMongoFileFormat(destFolder)
-	fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
+	filePath := table.CreateDBeerMongoFileFormat(destFolder)
+	fmt.Println("syn match dbeerStmtErr ' ' | hi link dbeerStmtErr ErrorMsg")
 	fmt.Println(filePath)
 
 	table.WriteToFile(filePath, values...)
@@ -116,8 +116,8 @@ func findOne(ctx context.Context, mongoCommand *mongoCommand, db *mongo.Database
 		return
 	}
 
-	filePath := table.CreateTabulaMongoFileFormat(destFolder)
-	fmt.Println("syn match tabulaStmtErr ' ' | hi link tabulaStmtErr ErrorMsg")
+	filePath := table.CreateDBeerMongoFileFormat(destFolder)
+	fmt.Println("syn match dbeerStmtErr ' ' | hi link dbeerStmtErr ErrorMsg")
 	fmt.Println(filePath)
 
 	table.WriteToFile(filePath, string(prettyJSON))

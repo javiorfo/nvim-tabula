@@ -40,14 +40,14 @@ func TestHighlighting(t *testing.T) {
 	}
 }
 
-func TestCreateTabulaFileFormat(t *testing.T) {
+func TestCreateDBeerFileFormat(t *testing.T) {
 	destFolder := "./test"
 	os.MkdirAll(destFolder, os.ModePerm)
 	defer os.RemoveAll(destFolder)
 
-	result := CreateTabulaFileFormat(destFolder)
-	if !strings.HasPrefix(result, destFolder) || !strings.HasSuffix(result, ".tabula") {
-		t.Errorf("CreateTabulaFileFormat() = %q; expected to start with %q and end with .tabula", result, destFolder)
+	result := CreateDBeerFileFormat(destFolder)
+	if !strings.HasPrefix(result, destFolder) || !strings.HasSuffix(result, ".dbeer") {
+		t.Errorf("CreateDBeerFileFormat() = %q; expected to start with %q and end with .dbeer", result, destFolder)
 	}
 }
 
@@ -75,7 +75,7 @@ func TestGenerate(t *testing.T) {
 	os.MkdirAll(destFolder, os.ModePerm)
 	defer os.RemoveAll(destFolder)
 
-	tabula := Tabula{
+	dbeer := DBeer{
 		DestFolder:      destFolder,
 		HeaderStyleLink: "style",
 		BorderStyle:     1,
@@ -89,9 +89,9 @@ func TestGenerate(t *testing.T) {
 		},
 	}
 
-	tabula.Generate()
+	dbeer.Generate()
 
-	filePath := CreateTabulaFileFormat(destFolder)
+	filePath := CreateDBeerFileFormat(destFolder)
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		t.Errorf("Expected file %q to be created, but it was not", filePath)
 	}

@@ -3,10 +3,10 @@ package factory
 import (
 	"errors"
 
-	"github.com/javiorfo/nvim-tabula/go/database/engine"
-	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
-	"github.com/javiorfo/nvim-tabula/go/database/engine/mongo"
-	"github.com/javiorfo/nvim-tabula/go/logger"
+	"github.com/javiorfo/nvim-dbeer/go/database/engine"
+	"github.com/javiorfo/nvim-dbeer/go/database/engine/model"
+	"github.com/javiorfo/nvim-dbeer/go/database/engine/mongo"
+	"github.com/javiorfo/nvim-dbeer/go/logger"
 )
 
 const DB2 = "db2"

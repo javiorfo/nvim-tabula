@@ -1,13 +1,13 @@
-local setup = require 'tabula'.SETTINGS
-local engines = require 'tabula.engines'
-local util = require 'tabula.util'
+local setup = require 'dbeer'.SETTINGS
+local engines = require 'dbeer.engines'
+local util = require 'dbeer.util'
 local spinetta = require 'spinetta'
 local M = {}
 
 function M.get_connection_string()
     local db = setup.db
     if db.connections then
-        local connection = db.connections[require 'tabula'.default_db]
+        local connection = db.connections[require 'dbeer'.default_db]
         local conn_str = engines.db[connection.engine].get_connection_string(connection)
         util.logger:debug(conn_str)
         return conn_str
@@ -49,7 +49,7 @@ function M.run()
     end
 
     local queries = get_buffer_content()
-    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db]) or nil
+    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'dbeer'.default_db]) or nil
 
     if not conn then
         return
@@ -60,16 +60,16 @@ function M.run()
     local script = string.format(
         "%s -engine %s -conn-str \"%s\" -queries " ..
         format_query ..
-        " -dest-folder %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s -log-debug %s",
+        " -dest-folder %s -border-style %d -header-style-link %s -dbeer-log-file %s -dbname %s -log-debug %s",
         engines.db[conn.engine].executor, conn.engine, M.get_connection_string(), queries, dest_folder,
         setup.output.border_style,
-        setup.output.header_style_link, util.tabula_log_file, conn.dbname, setup.internal.log_debug)
+        setup.output.header_style_link, util.dbeer_log_file, conn.dbname, setup.internal.log_debug)
 
     util.logger:debug(script)
     local result = {}
     local elapsed_time = 0
     local spinner = spinetta:new {
-        main_msg = "  Tabula   Executing query ",
+        main_msg = "  DBeer   Executing query ",
         speed_ms = 200,
         spinner = util.get_numeral_sprinner(),
         on_success = function()
@@ -121,20 +121,20 @@ end
 
 function M.build()
     if vim.fn.executable("go") == 0 then
-        util.logger:warn("Go is required. Install it to use this plugin and then execute manually :TabulaBuild")
+        util.logger:warn("Go is required. Install it to use this plugin and then execute manually :dbeerBuild")
         return false
     end
 
-    local root_path = util.tabula_root_path
+    local root_path = util.dbeer_root_path
     local script = string.format(
         "%sscript/build.sh %s 2> >( while read line; do echo \"[ERROR][$(date '+%%m/%%d/%%Y %%T')]: ${line}\"; done >> %s)",
         root_path,
-        root_path, util.tabula_log_file)
+        root_path, util.dbeer_log_file)
     local spinner = spinetta:new {
-        main_msg = "  Tabula   Building plugin... ",
+        main_msg = "  DBeer   Building plugin... ",
         speed_ms = 100,
         on_success = function()
-            util.logger:info("  Tabula is ready to be used!")
+            util.logger:info("  DBeer is ready to be used!")
         end
     }
 
@@ -144,17 +144,17 @@ end
 function M.close()
     for _, nr in ipairs(vim.api.nvim_list_bufs()) do
         local buf_name = vim.api.nvim_buf_get_name(nr)
-        if vim.api.nvim_buf_is_loaded(nr) and (buf_name:find(".tabula$") or buf_name:find(".tabula.json$")) then
+        if vim.api.nvim_buf_is_loaded(nr) and (buf_name:find(".dbeer$") or buf_name:find(".dbeer.json$")) then
             vim.cmd("bd! " .. buf_name)
         end
     end
     if setup.output.dest_folder == "/tmp" then
-        os.execute("rm -f /tmp/*.tabula*")
+        os.execute("rm -f /tmp/*.dbeer*")
     end
 end
 
 function M.show_logs()
-    vim.cmd(string.format("vsp %s | normal G", util.tabula_log_file))
+    vim.cmd(string.format("vsp %s | normal G", util.dbeer_log_file))
 end
 
 return M

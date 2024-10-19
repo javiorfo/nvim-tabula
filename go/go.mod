@@ -1,4 +1,4 @@
-module github.com/javiorfo/nvim-tabula/go
+module github.com/javiorfo/nvim-dbeer/go
 
 go 1.23.2
 

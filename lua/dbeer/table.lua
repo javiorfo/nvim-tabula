@@ -1,9 +1,11 @@
-local util = require 'tabula.util'
-local core = require 'tabula.core'
-local setup = require 'tabula'.SETTINGS
+local util = require 'dbeer.util'
+local core = require 'dbeer.core'
+local setup = require 'dbeer'.SETTINGS
 local popcorn = require 'popcorn'
 local borders = require 'popcorn.borders'
-local engines = require 'tabula.engines'
+local engines = require 'dbeer.engines'
+local finders = require 'telescope.finders'
+local pickers = require 'telescope.pickers'
 local M = {}
 
 local function get_file_line_info(filePath)
@@ -28,48 +30,49 @@ local function get_file_line_info(filePath)
     return first_line_length, total_lines
 end
 
-function M.show_table_info(args)
-    local table_selected = args[1]
+local function show_table_info(table_selected)
     util.logger:debug(table_selected)
     if table_selected == "" then
         return
+    else
+        table_selected = string.lower(table_selected)
     end
 
-    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db]) or nil
+    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'dbeer'.default_db]) or nil
 
     if not conn then
         return
     end
 
     local result = vim.fn.system(string.format(
-        "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s -tabula-log-file %s -dbname %s -log-debug %s",
+        "%s -option 3 -engine %s -conn-str \"%s\" -queries %s -border-style %d -header-style-link %s -dbeer-log-file %s -dbname %s -log-debug %s",
         engines.db[conn.engine].executor, conn.engine, core.get_connection_string(), table_selected,
         setup.output.border_style,
-        setup.output.header_style_link, util.tabula_log_file, conn.dbname, setup.internal.log_debug))
+        setup.output.header_style_link, util.dbeer_log_file, conn.dbname, setup.internal.log_debug))
 
     util.logger:debug(result)
 
-    local line_1, tabula_file
+    local line_1, dbeer_file
 
     for line in string.gmatch(result, "[^\r\n]+") do
         if not line_1 then
             line_1 = line
-        elseif not tabula_file then
-            tabula_file = line
+        elseif not dbeer_file then
+            dbeer_file = line
             break
         end
     end
 
     if string.sub(line_1, 1, 7) ~= "[ERROR]" then
-        if tabula_file then
-            local line_len, row_len = get_file_line_info(tabula_file)
+        if dbeer_file then
+            local line_len, row_len = get_file_line_info(dbeer_file)
             local opts = {
                 width = line_len + 4,
                 height = row_len + 2,
                 border = borders.simple_thick_border,
-                title = { "  Tabula - Table Info", "Boolean" },
+                title = { "  DBeer - Table Info", "Boolean" },
                 footer = { ((conn.engine ~= "mongo" and "Table: ") or "Collection: ") .. string.upper(table_selected), "String" },
-                content = tabula_file,
+                content = dbeer_file,
                 do_after = function()
                     vim.cmd [[ setlocal nowrap ]]
                     vim.cmd [[ setl noma ]]
@@ -86,16 +89,16 @@ function M.show_table_info(args)
     end
 end
 
-function M.get_tables()
-    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'tabula'.default_db]) or nil
+local function get_tables()
+    local conn = (setup.db and setup.db.connections and setup.db.connections[require 'dbeer'.default_db]) or nil
 
     if not conn then
         return
     end
     local result = vim.fn.system(string.format(
-        "%s -option 2 -engine %s -conn-str \"%s\" -tabula-log-file %s -dbname %s -log-debug %s",
+        "%s -option 2 -engine %s -conn-str \"%s\" -dbeer-log-file %s -dbname %s -log-debug %s",
         engines.db[conn.engine].executor, conn.engine,
-        core.get_connection_string(), util.tabula_log_file, conn.dbname, setup.internal.log_debug))
+        core.get_connection_string(), util.dbeer_log_file, conn.dbname, setup.internal.log_debug))
 
     util.logger:debug(result)
 
@@ -106,6 +109,31 @@ function M.get_tables()
         table.insert(table_names, word)
     end
     return table_names
+end
+
+function M.show()
+    pickers.new({
+        prompt_title = "  DBeer - Table Picker",
+        finder = finders.new_table({
+            results = get_tables(),
+            entry_maker = function(entry)
+                return {
+                    value = entry,
+                    display = entry,
+                    ordinal = entry,
+                }
+            end,
+        }),
+        sorter = require 'telescope.sorters'.get_generic_fuzzy_sorter(),
+        attach_mappings = function(_, map)
+            map("i", "<CR>", function(prompt_bufnr)
+                local selection = require("telescope.actions.state").get_selected_entry(prompt_bufnr)
+                show_table_info(selection.value)
+                --             require("telescope.actions").close(prompt_bufnr)
+            end)
+            return true
+        end,
+    }):find()
 end
 
 return M

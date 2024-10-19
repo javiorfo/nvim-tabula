@@ -4,7 +4,7 @@ import (
 	"fmt"
 
     _ "github.com/alexbrainman/odbc"
-	"github.com/javiorfo/nvim-tabula/go/database/engine/model"
+	"github.com/javiorfo/nvim-dbeer/go/database/engine/model"
 )
 
 type Informix struct {
