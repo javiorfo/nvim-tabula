@@ -23,7 +23,7 @@ function M.show()
     end
 
     if #content == 0 then
-        content = { { "No databases available", "ErrorMsg" } }
+        content = { { "No databases available", "WarningMsg" } }
     end
 
     local popup_opts = {
@@ -107,11 +107,11 @@ function M.expand()
         vim.cmd [[setl ma]]
         if lines[line_nr + 1] == "     󱘖 Connection Data" then
             if string.find(lines[line_nr + 2], "DSN") then
-                for _ = 1, 3 do
+                for _ = 0, 3 do
                     table.remove(lines, line_nr + 1)
                 end
             else
-                for _ = 1, 8 do
+                for _ = 0, 8 do
                     table.remove(lines, line_nr + 1)
                 end
             end
@@ -129,20 +129,22 @@ function M.expand()
 
             local db_const_data = engines.db[connection.engine]
             if connection.dbname == "odbc" then
-                table.insert(lines, line_nr + 2, "       DSN      󰁕 " .. connection.name .. " (ODBC)")
-                table.insert(lines, line_nr + 3, "")
+                table.insert(lines, line_nr + 2, "       ENGINE   󰁕 " .. connection.engine)
+                table.insert(lines, line_nr + 3, "       DSN      󰁕 " .. connection.name .. " (ODBC)")
+                table.insert(lines, line_nr + 4, "")
             else
-                table.insert(lines, line_nr + 2, "       NAME     󰁕 " .. connection.name)
-                table.insert(lines, line_nr + 3, "       HOST     󰁕 " .. (connection.host or db_const_data.default_host))
-                table.insert(lines, line_nr + 4, "       PORT     󰁕 " .. (connection.port or db_const_data.default_port))
-                table.insert(lines, line_nr + 5, "       DB NAME  󰁕 " .. connection.dbname)
-                table.insert(lines, line_nr + 6,
+                table.insert(lines, line_nr + 2, "       ENGINE   󰁕 " .. connection.engine)
+                table.insert(lines, line_nr + 3, "       NAME     󰁕 " .. connection.name)
+                table.insert(lines, line_nr + 4, "       HOST     󰁕 " .. (connection.host or db_const_data.default_host))
+                table.insert(lines, line_nr + 5, "       PORT     󰁕 " .. (connection.port or db_const_data.default_port))
+                table.insert(lines, line_nr + 6, "       DB NAME  󰁕 " .. connection.dbname)
+                table.insert(lines, line_nr + 7,
                     "       USER     󰁕 " ..
                     (((connection.user and setup.view.show_user and connection.user) or connection.user and "********") or "-"))
-                table.insert(lines, line_nr + 7,
+                table.insert(lines, line_nr + 8,
                     "       PASSWORD 󰁕 " ..
                     (((connection.password and setup.view.show_password and connection.password) or connection.password and "********") or "-"))
-                table.insert(lines, line_nr + 8, "")
+                table.insert(lines, line_nr + 9, "")
             end
         end
         vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
